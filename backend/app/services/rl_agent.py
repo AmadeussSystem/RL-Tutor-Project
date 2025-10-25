@@ -252,13 +252,18 @@ class QLearningAgent:
     
     def get_statistics(self) -> Dict:
         """Get agent training statistics"""
+        q_table_size = self.q_table.shape[0] * self.q_table.shape[1] if len(self.q_table.shape) > 1 else 0
+        
         return {
+            'total_sessions': self.total_updates,
             'total_updates': self.total_updates,
-            'q_table_shape': self.q_table.shape,
+            'q_table_size': q_table_size,
+            'q_table_shape': list(self.q_table.shape),
             'mean_q_value': float(np.mean(self.q_table)),
             'max_q_value': float(np.max(self.q_table)),
             'learning_rate': self.learning_rate,
             'epsilon': self.epsilon,
+            'exploration_rate': self.epsilon,  # Frontend expects this
             'avg_reward': float(np.mean(self.q_table)) if self.total_updates > 0 else 0.0
         }
 

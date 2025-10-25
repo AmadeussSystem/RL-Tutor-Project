@@ -145,21 +145,21 @@ class ApiClient {
         if (!response.ok) {
             let error;
             const contentType = response.headers.get('content-type');
-            
+
             if (contentType && contentType.includes('application/json')) {
                 error = await response.json().catch(() => ({ detail: 'Failed to parse error response' }));
             } else {
                 const text = await response.text().catch(() => '');
                 error = { detail: text || `HTTP ${response.status}` };
             }
-            
+
             console.error(`[API] Error (${response.status}):`, error);
-            
+
             // Handle specific error cases
             if (response.status === 401) {
                 console.error('[API] Unauthorized - Token may be invalid or expired');
             }
-            
+
             throw new Error(error.detail || error.error || `HTTP ${response.status}`);
         }
 

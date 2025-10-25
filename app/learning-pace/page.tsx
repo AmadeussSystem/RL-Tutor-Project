@@ -235,247 +235,247 @@ export default function LearningPacePage() {
   return (
     <Sidebar>
       <div className="min-h-screen bg-black text-white p-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-3 bg-gradient-to-br from-purple-500 to-blue-600 rounded-xl">
-              <Timer className="w-8 h-8" />
-            </div>
-            <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-                Learning Pace
-              </h1>
-              <p className="text-zinc-400 mt-1">Track your learning speed and optimize difficulty</p>
-            </div>
-          </div>
-          <button
-            onClick={analyzePace}
-            disabled={isAnalyzing}
-            className="px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-          >
-            {isAnalyzing ? (
-              <>
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                Analyzing...
-              </>
-            ) : (
-              <>
-                <TrendingUp className="w-5 h-5" />
-                Analyze My Pace
-              </>
-            )}
-          </button>
-        </div>
-
-        {error && (
-          <div className="mb-6 p-4 bg-red-500/10 border border-red-500 rounded-lg text-red-400">
-            {error}
-          </div>
-        )}
-
-        {pace && (
-          <>
-            {/* Pace Summary Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              <div className="bg-zinc-950 rounded-xl p-6 border border-zinc-800">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-zinc-400 text-sm">Pace Category</span>
-                  <Zap className={`w-5 h-5 ${getPaceCategoryColor(pace.pace_category)}`} />
-                </div>
-                <div className={`text-2xl font-bold ${getPaceCategoryColor(pace.pace_category)}`}>
-                  {getPaceCategoryLabel(pace.pace_category)}
-                </div>
-                <div className="text-sm text-zinc-500 mt-1">
-                  {pace.avg_speed.toFixed(2)}x baseline
-                </div>
+        <div className="max-w-7xl mx-auto">
+          {/* Header */}
+          <div className="mb-8">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-3 bg-gradient-to-br from-purple-500 to-blue-600 rounded-xl">
+                <Timer className="w-8 h-8" />
               </div>
-
-              <div className="bg-zinc-950 rounded-xl p-6 border border-zinc-800">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-zinc-400 text-sm">Difficulty Level</span>
-                  <Target className="w-5 h-5 text-blue-400" />
-                </div>
-                <div className="text-2xl font-bold text-blue-400">
-                  {pace.difficulty_preference}/10
-                </div>
-                <div className="text-sm text-zinc-500 mt-1">
-                  Recommended: {pace.recommended_difficulty}/10
-                </div>
-              </div>
-
-              <div className="bg-zinc-950 rounded-xl p-6 border border-zinc-800">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-zinc-400 text-sm">Completion Rate</span>
-                  <Target className="w-5 h-5 text-green-400" />
-                </div>
-                <div className="text-2xl font-bold text-green-400">
-                  {pace.completion_rate.toFixed(0)}%
-                </div>
-                <div className="text-sm text-zinc-500 mt-1">
-                  {pace.total_concepts_completed} concepts
-                </div>
-              </div>
-
-              <div className="bg-zinc-950 rounded-xl p-6 border border-zinc-800">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-zinc-400 text-sm">Avg Time/Concept</span>
-                  <Clock className="w-5 h-5 text-purple-400" />
-                </div>
-                <div className="text-2xl font-bold text-purple-400">
-                  {formatTime(pace.avg_time_per_concept_seconds)}
-                </div>
-                <div className="text-sm text-zinc-500 mt-1">Per concept</div>
+              <div>
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+                  Learning Pace
+                </h1>
+                <p className="text-zinc-400 mt-1">Track your learning speed and optimize difficulty</p>
               </div>
             </div>
-
-            {/* Learning Mode Toggles */}
-            <div className="bg-zinc-950 rounded-xl p-6 border border-zinc-800 mb-8">
-              <div className="flex items-center gap-2 mb-4">
-                <Settings className="w-5 h-5 text-purple-400" />
-                <h2 className="text-xl font-bold">Learning Mode</h2>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <button
-                  onClick={() => updatePreferences(!pace.fast_track_mode, false)}
-                  className={`p-4 rounded-lg border-2 transition-all ${pace.fast_track_mode
-                    ? "border-purple-500 bg-purple-500/10"
-                    : "border-zinc-700 hover:border-zinc-600"
-                    }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <Zap className={`w-6 h-6 ${pace.fast_track_mode ? "text-purple-400" : "text-zinc-500"}`} />
-                    <div className="text-left">
-                      <div className="font-bold">Fast Track Mode</div>
-                      <div className="text-sm text-zinc-400">Accelerated learning with harder content</div>
-                    </div>
-                  </div>
-                </button>
-
-                <button
-                  onClick={() => updatePreferences(false, !pace.deep_dive_mode)}
-                  className={`p-4 rounded-lg border-2 transition-all ${pace.deep_dive_mode
-                    ? "border-blue-500 bg-blue-500/10"
-                    : "border-zinc-700 hover:border-zinc-600"
-                    }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <Target className={`w-6 h-6 ${pace.deep_dive_mode ? "text-blue-400" : "text-zinc-500"}`} />
-                    <div className="text-left">
-                      <div className="font-bold">Deep Dive Mode</div>
-                      <div className="text-sm text-zinc-400">Thorough learning with comprehensive coverage</div>
-                    </div>
-                  </div>
-                </button>
-              </div>
-            </div>
-
-            {/* Difficulty Adjustment Recommendation */}
-            {adjustment && (
-              <div className={`bg-zinc-950 rounded-xl p-6 border mb-8 ${adjustment.should_increase ? "border-green-500/50" :
-                adjustment.should_decrease ? "border-yellow-500/50" :
-                  "border-zinc-800"
-                }`}>
-                <div className="flex items-center gap-2 mb-3">
-                  <TrendingUp className="w-5 h-5 text-purple-400" />
-                  <h2 className="text-xl font-bold">Difficulty Recommendation</h2>
-                </div>
-                <p className="text-zinc-300 mb-4">{adjustment.adjustment_reason}</p>
-                {adjustment.current_difficulty !== adjustment.recommended_difficulty && (
-                  <button
-                    onClick={() => updatePreferences(undefined, undefined, adjustment.recommended_difficulty)}
-                    className="px-4 py-2 bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 rounded-lg font-medium transition-all"
-                  >
-                    Apply Recommended Difficulty ({adjustment.recommended_difficulty}/10)
-                  </button>
-                )}
-              </div>
-            )}
-
-            {/* Time Analytics */}
-            {analytics && analytics.total_time_seconds > 0 && (
-              <div className="bg-zinc-950 rounded-xl p-6 border border-zinc-800 mb-8">
-                <div className="flex items-center gap-2 mb-4">
-                  <BarChart3 className="w-5 h-5 text-purple-400" />
-                  <h2 className="text-xl font-bold">Time Analytics (Last 7 Days)</h2>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-purple-400">
-                      {analytics.total_time_hours.toFixed(1)}h
-                    </div>
-                    <div className="text-sm text-zinc-400 mt-1">Total Time</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-blue-400">
-                      {analytics.daily_time_spent.length}
-                    </div>
-                    <div className="text-sm text-zinc-400 mt-1">Days Active</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-green-400">
-                      {analytics.peak_learning_hours.join(", ")}
-                    </div>
-                    <div className="text-sm text-zinc-400 mt-1">Peak Hours</div>
-                  </div>
-                </div>
-
-                {/* Time by Concept */}
-                {Object.keys(analytics.time_by_concept).length > 0 && (
-                  <div className="mt-6">
-                    <h3 className="text-lg font-bold mb-3">Time by Concept</h3>
-                    <div className="space-y-2">
-                      {Object.entries(analytics.time_by_concept).map(([concept, time]) => (
-                        <div key={concept} className="flex items-center justify-between p-3 bg-zinc-900 rounded-lg">
-                          <span className="capitalize">{concept}</span>
-                          <span className="text-purple-400 font-mono">{time.minutes.toFixed(1)}m</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Adjustment History */}
-            {pace.adjustment_history && pace.adjustment_history.length > 0 && (
-              <div className="bg-zinc-950 rounded-xl p-6 border border-zinc-800">
-                <h2 className="text-xl font-bold mb-4">Adjustment History</h2>
-                <div className="space-y-3">
-                  {pace.adjustment_history.slice(-5).reverse().map((adj, idx) => (
-                    <div key={idx} className="p-4 bg-zinc-900 rounded-lg">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm text-zinc-400">
-                          {new Date(adj.date).toLocaleDateString()}
-                        </span>
-                        <span className="font-mono text-sm">
-                          {adj.from_difficulty} → {adj.to_difficulty}
-                        </span>
-                      </div>
-                      <p className="text-sm text-zinc-300">{adj.reason}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </>
-        )}
-
-        {!pace && !isLoading && (
-          <div className="text-center py-12">
-            <Timer className="w-16 h-16 text-zinc-600 mx-auto mb-4" />
-            <p className="text-zinc-400 mb-4">No pace data available yet</p>
             <button
               onClick={analyzePace}
-              className="px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 rounded-lg font-medium transition-all"
+              disabled={isAnalyzing}
+              className="px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
-              Analyze My Learning Pace
+              {isAnalyzing ? (
+                <>
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                  Analyzing...
+                </>
+              ) : (
+                <>
+                  <TrendingUp className="w-5 h-5" />
+                  Analyze My Pace
+                </>
+              )}
             </button>
           </div>
-        )}
+
+          {error && (
+            <div className="mb-6 p-4 bg-red-500/10 border border-red-500 rounded-lg text-red-400">
+              {error}
+            </div>
+          )}
+
+          {pace && (
+            <>
+              {/* Pace Summary Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div className="bg-zinc-950 rounded-xl p-6 border border-zinc-800">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-zinc-400 text-sm">Pace Category</span>
+                    <Zap className={`w-5 h-5 ${getPaceCategoryColor(pace.pace_category)}`} />
+                  </div>
+                  <div className={`text-2xl font-bold ${getPaceCategoryColor(pace.pace_category)}`}>
+                    {getPaceCategoryLabel(pace.pace_category)}
+                  </div>
+                  <div className="text-sm text-zinc-500 mt-1">
+                    {pace.avg_speed.toFixed(2)}x baseline
+                  </div>
+                </div>
+
+                <div className="bg-zinc-950 rounded-xl p-6 border border-zinc-800">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-zinc-400 text-sm">Difficulty Level</span>
+                    <Target className="w-5 h-5 text-blue-400" />
+                  </div>
+                  <div className="text-2xl font-bold text-blue-400">
+                    {pace.difficulty_preference}/10
+                  </div>
+                  <div className="text-sm text-zinc-500 mt-1">
+                    Recommended: {pace.recommended_difficulty}/10
+                  </div>
+                </div>
+
+                <div className="bg-zinc-950 rounded-xl p-6 border border-zinc-800">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-zinc-400 text-sm">Completion Rate</span>
+                    <Target className="w-5 h-5 text-green-400" />
+                  </div>
+                  <div className="text-2xl font-bold text-green-400">
+                    {pace.completion_rate.toFixed(0)}%
+                  </div>
+                  <div className="text-sm text-zinc-500 mt-1">
+                    {pace.total_concepts_completed} concepts
+                  </div>
+                </div>
+
+                <div className="bg-zinc-950 rounded-xl p-6 border border-zinc-800">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-zinc-400 text-sm">Avg Time/Concept</span>
+                    <Clock className="w-5 h-5 text-purple-400" />
+                  </div>
+                  <div className="text-2xl font-bold text-purple-400">
+                    {formatTime(pace.avg_time_per_concept_seconds)}
+                  </div>
+                  <div className="text-sm text-zinc-500 mt-1">Per concept</div>
+                </div>
+              </div>
+
+              {/* Learning Mode Toggles */}
+              <div className="bg-zinc-950 rounded-xl p-6 border border-zinc-800 mb-8">
+                <div className="flex items-center gap-2 mb-4">
+                  <Settings className="w-5 h-5 text-purple-400" />
+                  <h2 className="text-xl font-bold">Learning Mode</h2>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <button
+                    onClick={() => updatePreferences(!pace.fast_track_mode, false)}
+                    className={`p-4 rounded-lg border-2 transition-all ${pace.fast_track_mode
+                      ? "border-purple-500 bg-purple-500/10"
+                      : "border-zinc-700 hover:border-zinc-600"
+                      }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Zap className={`w-6 h-6 ${pace.fast_track_mode ? "text-purple-400" : "text-zinc-500"}`} />
+                      <div className="text-left">
+                        <div className="font-bold">Fast Track Mode</div>
+                        <div className="text-sm text-zinc-400">Accelerated learning with harder content</div>
+                      </div>
+                    </div>
+                  </button>
+
+                  <button
+                    onClick={() => updatePreferences(false, !pace.deep_dive_mode)}
+                    className={`p-4 rounded-lg border-2 transition-all ${pace.deep_dive_mode
+                      ? "border-blue-500 bg-blue-500/10"
+                      : "border-zinc-700 hover:border-zinc-600"
+                      }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Target className={`w-6 h-6 ${pace.deep_dive_mode ? "text-blue-400" : "text-zinc-500"}`} />
+                      <div className="text-left">
+                        <div className="font-bold">Deep Dive Mode</div>
+                        <div className="text-sm text-zinc-400">Thorough learning with comprehensive coverage</div>
+                      </div>
+                    </div>
+                  </button>
+                </div>
+              </div>
+
+              {/* Difficulty Adjustment Recommendation */}
+              {adjustment && (
+                <div className={`bg-zinc-950 rounded-xl p-6 border mb-8 ${adjustment.should_increase ? "border-green-500/50" :
+                  adjustment.should_decrease ? "border-yellow-500/50" :
+                    "border-zinc-800"
+                  }`}>
+                  <div className="flex items-center gap-2 mb-3">
+                    <TrendingUp className="w-5 h-5 text-purple-400" />
+                    <h2 className="text-xl font-bold">Difficulty Recommendation</h2>
+                  </div>
+                  <p className="text-zinc-300 mb-4">{adjustment.adjustment_reason}</p>
+                  {adjustment.current_difficulty !== adjustment.recommended_difficulty && (
+                    <button
+                      onClick={() => updatePreferences(undefined, undefined, adjustment.recommended_difficulty)}
+                      className="px-4 py-2 bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 rounded-lg font-medium transition-all"
+                    >
+                      Apply Recommended Difficulty ({adjustment.recommended_difficulty}/10)
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {/* Time Analytics */}
+              {analytics && analytics.total_time_seconds > 0 && (
+                <div className="bg-zinc-950 rounded-xl p-6 border border-zinc-800 mb-8">
+                  <div className="flex items-center gap-2 mb-4">
+                    <BarChart3 className="w-5 h-5 text-purple-400" />
+                    <h2 className="text-xl font-bold">Time Analytics (Last 7 Days)</h2>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-purple-400">
+                        {analytics.total_time_hours.toFixed(1)}h
+                      </div>
+                      <div className="text-sm text-zinc-400 mt-1">Total Time</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-blue-400">
+                        {analytics.daily_time_spent.length}
+                      </div>
+                      <div className="text-sm text-zinc-400 mt-1">Days Active</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-green-400">
+                        {analytics.peak_learning_hours.join(", ")}
+                      </div>
+                      <div className="text-sm text-zinc-400 mt-1">Peak Hours</div>
+                    </div>
+                  </div>
+
+                  {/* Time by Concept */}
+                  {Object.keys(analytics.time_by_concept).length > 0 && (
+                    <div className="mt-6">
+                      <h3 className="text-lg font-bold mb-3">Time by Concept</h3>
+                      <div className="space-y-2">
+                        {Object.entries(analytics.time_by_concept).map(([concept, time]) => (
+                          <div key={concept} className="flex items-center justify-between p-3 bg-zinc-900 rounded-lg">
+                            <span className="capitalize">{concept}</span>
+                            <span className="text-purple-400 font-mono">{time.minutes.toFixed(1)}m</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Adjustment History */}
+              {pace.adjustment_history && pace.adjustment_history.length > 0 && (
+                <div className="bg-zinc-950 rounded-xl p-6 border border-zinc-800">
+                  <h2 className="text-xl font-bold mb-4">Adjustment History</h2>
+                  <div className="space-y-3">
+                    {pace.adjustment_history.slice(-5).reverse().map((adj, idx) => (
+                      <div key={idx} className="p-4 bg-zinc-900 rounded-lg">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm text-zinc-400">
+                            {new Date(adj.date).toLocaleDateString()}
+                          </span>
+                          <span className="font-mono text-sm">
+                            {adj.from_difficulty} → {adj.to_difficulty}
+                          </span>
+                        </div>
+                        <p className="text-sm text-zinc-300">{adj.reason}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+
+          {!pace && !isLoading && (
+            <div className="text-center py-12">
+              <Timer className="w-16 h-16 text-zinc-600 mx-auto mb-4" />
+              <p className="text-zinc-400 mb-4">No pace data available yet</p>
+              <button
+                onClick={analyzePace}
+                className="px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 rounded-lg font-medium transition-all"
+              >
+                Analyze My Learning Pace
+              </button>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
-  </Sidebar>
+    </Sidebar>
   );
 }

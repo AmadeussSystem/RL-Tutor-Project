@@ -150,145 +150,145 @@ export default function LearningStyleResults() {
     return (
         <Sidebar>
             <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4">
-            <div className="max-w-6xl mx-auto">
-                {/* Header */}
-                <div className="text-center mb-8">
-                    <h1 className="text-4xl font-bold text-gray-800 mb-2">
-                        Your Learning Style Profile
-                    </h1>
-                    <p className="text-gray-600">
-                        Discovered on {new Date(results.assessed_at).toLocaleDateString()}
-                    </p>
-                </div>
-
-                {/* Dominant Style Card */}
-                <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg shadow-2xl p-8 mb-8 text-white">
-                    <div className="text-center">
-                        <div className="text-6xl mb-4">{styleEmoji[results.dominant_style]}</div>
-                        <h2 className="text-3xl font-bold mb-2">
-                            {styleName[results.dominant_style]}
-                        </h2>
-                        <p className="text-lg opacity-90">{results.description}</p>
+                <div className="max-w-6xl mx-auto">
+                    {/* Header */}
+                    <div className="text-center mb-8">
+                        <h1 className="text-4xl font-bold text-gray-800 mb-2">
+                            Your Learning Style Profile
+                        </h1>
+                        <p className="text-gray-600">
+                            Discovered on {new Date(results.assessed_at).toLocaleDateString()}
+                        </p>
                     </div>
-                </div>
 
-                {/* Charts Row */}
-                <div className="grid md:grid-cols-2 gap-8 mb-8">
-                    {/* Radar Chart */}
-                    <div className="bg-white rounded-lg shadow-lg p-6">
-                        <h3 className="text-xl font-semibold text-gray-800 mb-4 text-center">
-                            Learning Style Breakdown
-                        </h3>
-                        <div className="h-80 flex items-center justify-center">
-                            <Radar
-                                data={radarData}
-                                options={{
-                                    scales: {
-                                        r: {
-                                            beginAtZero: true,
-                                            max: 100,
-                                            ticks: {
-                                                stepSize: 20,
+                    {/* Dominant Style Card */}
+                    <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg shadow-2xl p-8 mb-8 text-white">
+                        <div className="text-center">
+                            <div className="text-6xl mb-4">{styleEmoji[results.dominant_style]}</div>
+                            <h2 className="text-3xl font-bold mb-2">
+                                {styleName[results.dominant_style]}
+                            </h2>
+                            <p className="text-lg opacity-90">{results.description}</p>
+                        </div>
+                    </div>
+
+                    {/* Charts Row */}
+                    <div className="grid md:grid-cols-2 gap-8 mb-8">
+                        {/* Radar Chart */}
+                        <div className="bg-white rounded-lg shadow-lg p-6">
+                            <h3 className="text-xl font-semibold text-gray-800 mb-4 text-center">
+                                Learning Style Breakdown
+                            </h3>
+                            <div className="h-80 flex items-center justify-center">
+                                <Radar
+                                    data={radarData}
+                                    options={{
+                                        scales: {
+                                            r: {
+                                                beginAtZero: true,
+                                                max: 100,
+                                                ticks: {
+                                                    stepSize: 20,
+                                                },
                                             },
                                         },
-                                    },
-                                    plugins: {
-                                        legend: {
-                                            display: false,
+                                        plugins: {
+                                            legend: {
+                                                display: false,
+                                            },
                                         },
-                                    },
-                                    maintainAspectRatio: true,
-                                }}
-                            />
-                        </div>
-                    </div>
-
-                    {/* Pie Chart */}
-                    <div className="bg-white rounded-lg shadow-lg p-6">
-                        <h3 className="text-xl font-semibold text-gray-800 mb-4 text-center">
-                            Distribution
-                        </h3>
-                        <div className="h-80 flex items-center justify-center">
-                            <Pie
-                                data={pieData}
-                                options={{
-                                    plugins: {
-                                        legend: {
-                                            position: 'bottom',
-                                        },
-                                    },
-                                    maintainAspectRatio: true,
-                                }}
-                            />
-                        </div>
-                    </div>
-                </div>
-
-                {/* Scores Grid */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                    <div className="bg-red-50 border-2 border-red-200 rounded-lg p-4 text-center">
-                        <div className="text-3xl mb-2">👁️</div>
-                        <div className="text-2xl font-bold text-red-600">{results.visual_score}%</div>
-                        <div className="text-sm text-gray-600">Visual</div>
-                    </div>
-                    <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 text-center">
-                        <div className="text-3xl mb-2">👂</div>
-                        <div className="text-2xl font-bold text-blue-600">{results.auditory_score}%</div>
-                        <div className="text-sm text-gray-600">Auditory</div>
-                    </div>
-                    <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4 text-center">
-                        <div className="text-3xl mb-2">📚</div>
-                        <div className="text-2xl font-bold text-green-600">{results.reading_score}%</div>
-                        <div className="text-sm text-gray-600">Reading/Writing</div>
-                    </div>
-                    <div className="bg-purple-50 border-2 border-purple-200 rounded-lg p-4 text-center">
-                        <div className="text-3xl mb-2">✋</div>
-                        <div className="text-2xl font-bold text-purple-600">{results.kinesthetic_score}%</div>
-                        <div className="text-sm text-gray-600">Kinesthetic</div>
-                    </div>
-                </div>
-
-                {/* Study Tips */}
-                <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
-                    <h3 className="text-2xl font-semibold text-gray-800 mb-4 flex items-center">
-                        <span className="mr-2">💡</span>
-                        Personalized Study Tips
-                    </h3>
-                    <div className="grid md:grid-cols-2 gap-4">
-                        {results.study_tips.map((tip, index) => (
-                            <div key={index} className="flex items-start bg-indigo-50 rounded-lg p-4">
-                                <div className="flex-shrink-0 w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center font-bold mr-3">
-                                    {index + 1}
-                                </div>
-                                <p className="text-gray-700">{tip}</p>
+                                        maintainAspectRatio: true,
+                                    }}
+                                />
                             </div>
-                        ))}
-                    </div>
-                </div>
+                        </div>
 
-                {/* Action Buttons */}
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <button
-                        onClick={() => router.push('/dashboard')}
-                        className="px-8 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 shadow-lg"
-                    >
-                        Go to Dashboard
-                    </button>
-                    <button
-                        onClick={() => router.push('/learning-style-quiz')}
-                        className="px-8 py-3 bg-gray-500 text-white rounded-lg font-semibold hover:bg-gray-600 shadow-lg"
-                    >
-                        Retake Quiz
-                    </button>
-                    <button
-                        onClick={() => router.push('/learn')}
-                        className="px-8 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 shadow-lg"
-                    >
-                        Start Learning
-                    </button>
+                        {/* Pie Chart */}
+                        <div className="bg-white rounded-lg shadow-lg p-6">
+                            <h3 className="text-xl font-semibold text-gray-800 mb-4 text-center">
+                                Distribution
+                            </h3>
+                            <div className="h-80 flex items-center justify-center">
+                                <Pie
+                                    data={pieData}
+                                    options={{
+                                        plugins: {
+                                            legend: {
+                                                position: 'bottom',
+                                            },
+                                        },
+                                        maintainAspectRatio: true,
+                                    }}
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Scores Grid */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                        <div className="bg-red-50 border-2 border-red-200 rounded-lg p-4 text-center">
+                            <div className="text-3xl mb-2">👁️</div>
+                            <div className="text-2xl font-bold text-red-600">{results.visual_score}%</div>
+                            <div className="text-sm text-gray-600">Visual</div>
+                        </div>
+                        <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 text-center">
+                            <div className="text-3xl mb-2">👂</div>
+                            <div className="text-2xl font-bold text-blue-600">{results.auditory_score}%</div>
+                            <div className="text-sm text-gray-600">Auditory</div>
+                        </div>
+                        <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4 text-center">
+                            <div className="text-3xl mb-2">📚</div>
+                            <div className="text-2xl font-bold text-green-600">{results.reading_score}%</div>
+                            <div className="text-sm text-gray-600">Reading/Writing</div>
+                        </div>
+                        <div className="bg-purple-50 border-2 border-purple-200 rounded-lg p-4 text-center">
+                            <div className="text-3xl mb-2">✋</div>
+                            <div className="text-2xl font-bold text-purple-600">{results.kinesthetic_score}%</div>
+                            <div className="text-sm text-gray-600">Kinesthetic</div>
+                        </div>
+                    </div>
+
+                    {/* Study Tips */}
+                    <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
+                        <h3 className="text-2xl font-semibold text-gray-800 mb-4 flex items-center">
+                            <span className="mr-2">💡</span>
+                            Personalized Study Tips
+                        </h3>
+                        <div className="grid md:grid-cols-2 gap-4">
+                            {results.study_tips.map((tip, index) => (
+                                <div key={index} className="flex items-start bg-indigo-50 rounded-lg p-4">
+                                    <div className="flex-shrink-0 w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center font-bold mr-3">
+                                        {index + 1}
+                                    </div>
+                                    <p className="text-gray-700">{tip}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                        <button
+                            onClick={() => router.push('/dashboard')}
+                            className="px-8 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 shadow-lg"
+                        >
+                            Go to Dashboard
+                        </button>
+                        <button
+                            onClick={() => router.push('/learning-style-quiz')}
+                            className="px-8 py-3 bg-gray-500 text-white rounded-lg font-semibold hover:bg-gray-600 shadow-lg"
+                        >
+                            Retake Quiz
+                        </button>
+                        <button
+                            onClick={() => router.push('/learn')}
+                            className="px-8 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 shadow-lg"
+                        >
+                            Start Learning
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
         </Sidebar>
     );
 }

@@ -42,7 +42,7 @@ export default function DashboardPage() {
                     setRecommendations(recs);
                 } catch (recError: any) {
                     console.error('Failed to load recommendations:', recError);
-                    
+
                     // If token is invalid/expired, clear it and show warning
                     if (recError.message && recError.message.includes('401')) {
                         console.warn('Token expired or invalid - clearing local storage');
@@ -110,7 +110,7 @@ export default function DashboardPage() {
                         </div>
                     </div>
                 )}
-                
+
                 {/* Welcome Header with Gradient */}
                 <div className="bg-gradient-to-r from-purple-900/20 via-blue-900/20 to-purple-900/20 border-b border-zinc-800/50 backdrop-blur-sm">
                     <div className="max-w-7xl mx-auto px-6 py-10">
