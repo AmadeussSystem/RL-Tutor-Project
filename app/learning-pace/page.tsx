@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Sidebar from "@/app/components/Sidebar";
-import { Timer, Zap, Target, TrendingUp, Clock, BarChart3, Settings } from "lucide-react";
+import { Timer, Zap, Target, TrendingUp, Clock, BarChart3, Settings, AlertCircle } from "lucide-react";
 
 interface PaceProfile {
   student_id: number;
@@ -54,6 +54,7 @@ export default function LearningPacePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [tokenExpired, setTokenExpired] = useState(false);
 
   useEffect(() => {
     loadPaceData();
@@ -62,6 +63,7 @@ export default function LearningPacePage() {
   const loadPaceData = async () => {
     setIsLoading(true);
     setError(null);
+    setTokenExpired(false);
 
     const token = localStorage.getItem("token");
     const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8002";
@@ -86,6 +88,20 @@ export default function LearningPacePage() {
       if (paceResponse.ok) {
         const paceData = await paceResponse.json();
         setPace(paceData);
+      } else {
+        const errorText = await paceResponse.text();
+        console.error("Failed to load pace profile:", paceResponse.status, errorText);
+
+        // If 401, token is expired
+        if (paceResponse.status === 401) {
+          console.warn('Token expired or invalid - clearing local storage');
+          localStorage.removeItem('token');
+          localStorage.removeItem('username');
+          setTokenExpired(true);
+          throw new Error('Your session has expired. Please log in again.');
+        }
+
+        throw new Error(`Failed to load pace profile: ${paceResponse.status}`);
       }
 
       // Load time analytics
@@ -101,6 +117,10 @@ export default function LearningPacePage() {
       if (analyticsResponse.ok) {
         const analyticsData = await analyticsResponse.json();
         setAnalytics(analyticsData);
+      } else {
+        const errorText = await analyticsResponse.text();
+        console.error("Failed to load time analytics:", analyticsResponse.status, errorText);
+        // Don't throw - analytics is optional
       }
 
       // Load difficulty adjustment recommendation
@@ -116,9 +136,14 @@ export default function LearningPacePage() {
       if (adjustmentResponse.ok) {
         const adjustmentData = await adjustmentResponse.json();
         setAdjustment(adjustmentData);
+      } else {
+        const errorText = await adjustmentResponse.text();
+        console.error("Failed to load difficulty adjustment:", adjustmentResponse.status, errorText);
+        // Don't throw - adjustment is optional
       }
     } catch (err) {
-      setError("Failed to load pace data");
+      const errorMessage = err instanceof Error ? err.message : "Failed to load pace data";
+      setError(errorMessage);
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -236,6 +261,25 @@ export default function LearningPacePage() {
     <Sidebar>
       <div className="min-h-screen bg-black text-white p-8">
         <div className="max-w-7xl mx-auto">
+          {/* Token Expired Warning */}
+          {tokenExpired && (
+            <div className="mb-6 bg-yellow-900/20 border border-yellow-600 rounded-lg p-4 flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-yellow-500 mt-0.5 flex-shrink-0" />
+              <div className="flex-1">
+                <h3 className="font-semibold text-yellow-500 mb-1">Session Expired</h3>
+                <p className="text-sm text-yellow-200/80 mb-3">
+                  Your session has expired. Please log in again to view your learning pace.
+                </p>
+                <a
+                  href="/login"
+                  className="inline-block px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg text-sm font-medium transition-colors"
+                >
+                  Go to Login
+                </a>
+              </div>
+            </div>
+          )}
+
           {/* Header */}
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-4">

@@ -45,6 +45,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             localStorage.setItem('username', username);
             localStorage.setItem('token', response.access_token);
 
+            // Store token expiration (24 hours from now - matches backend default)
+            const expiresAt = new Date();
+            expiresAt.setHours(expiresAt.getHours() + 24);
+            localStorage.setItem('tokenExpiresAt', expiresAt.toISOString());
+
             setUser(username);
             setToken(response.access_token);
         } catch (err: any) {
@@ -75,6 +80,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             localStorage.setItem('username', username);
             localStorage.setItem('token', response.access_token);
 
+            // Store token expiration (24 hours from now - matches backend default)
+            const expiresAt = new Date();
+            expiresAt.setHours(expiresAt.getHours() + 24);
+            localStorage.setItem('tokenExpiresAt', expiresAt.toISOString());
+
             setUser(username);
             setToken(response.access_token);
         } catch (err: any) {
@@ -88,6 +98,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const logout = () => {
         localStorage.removeItem('username');
         localStorage.removeItem('token');
+        localStorage.removeItem('tokenExpiresAt');
         setUser(null);
         setToken(null);
         setError(null);
