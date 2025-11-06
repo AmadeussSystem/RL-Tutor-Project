@@ -194,21 +194,21 @@ export default function AnalyticsPage() {
                                                 </linearGradient>
                                             </defs>
                                             <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
-                                            <XAxis 
-                                                dataKey="date" 
+                                            <XAxis
+                                                dataKey="date"
                                                 stroke="#71717a"
                                                 style={{ fontSize: '11px' }}
                                                 angle={-45}
                                                 textAnchor="end"
                                                 height={60}
                                             />
-                                            <YAxis 
+                                            <YAxis
                                                 yAxisId="left"
                                                 stroke="#10b981"
                                                 style={{ fontSize: '12px' }}
                                                 label={{ value: 'Accuracy %', angle: -90, position: 'insideLeft', style: { fill: '#10b981' } }}
                                             />
-                                            <YAxis 
+                                            <YAxis
                                                 yAxisId="right"
                                                 orientation="right"
                                                 stroke="#8b5cf6"
@@ -229,7 +229,7 @@ export default function AnalyticsPage() {
                                                     return [value, name];
                                                 }}
                                             />
-                                            <Legend 
+                                            <Legend
                                                 wrapperStyle={{ paddingTop: '20px' }}
                                                 formatter={(value) => {
                                                     if (value === 'accuracy') return 'Accuracy';
@@ -266,15 +266,15 @@ export default function AnalyticsPage() {
                                     <ResponsiveContainer width="100%" height={300}>
                                         <BarChart data={performanceData}>
                                             <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
-                                            <XAxis 
-                                                dataKey="date" 
+                                            <XAxis
+                                                dataKey="date"
                                                 stroke="#71717a"
                                                 style={{ fontSize: '11px' }}
                                                 angle={-45}
                                                 textAnchor="end"
                                                 height={60}
                                             />
-                                            <YAxis 
+                                            <YAxis
                                                 stroke="#71717a"
                                                 style={{ fontSize: '12px' }}
                                             />
@@ -287,8 +287,8 @@ export default function AnalyticsPage() {
                                                 }}
                                                 formatter={(value: any) => [`+${value.toFixed(1)}`, 'Reward']}
                                             />
-                                            <Bar 
-                                                dataKey="avg_reward" 
+                                            <Bar
+                                                dataKey="avg_reward"
                                                 fill="url(#barGradient)"
                                                 radius={[8, 8, 0, 0]}
                                             />

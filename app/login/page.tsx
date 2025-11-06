@@ -22,7 +22,7 @@ export default function LoginPage() {
 
         try {
             await login(formData.username, formData.password);
-            
+
             // Check placement status after login
             const token = localStorage.getItem('token');
             if (token) {
@@ -36,7 +36,7 @@ export default function LoginPage() {
                     console.error('Failed to check placement status:', err);
                 }
             }
-            
+
             router.push('/dashboard');
         } catch (err) {
             // Error is handled by AuthContext

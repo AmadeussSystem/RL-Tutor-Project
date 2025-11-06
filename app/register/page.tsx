@@ -28,7 +28,7 @@ export default function RegisterPage() {
                 formData.password,
                 formData.fullName || undefined
             );
-            
+
             // New users always need to take placement test
             router.push('/placement-test');
         } catch (err) {
