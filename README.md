@@ -1,52 +1,66 @@
 # RL-Based Personalized Educational Tutor 🎓🤖
 
-A full-stack intelligent tutoring system that uses **Reinforcement Learning (Q-Learning)** to personalize educational content delivery based on individual student performance and learning patterns.
+A full-stack intelligent tutoring system that uses **Reinforcement Learning (Q-Learning)** to personalize educational content delivery for IIT JEE preparation based on individual student performance and learning patterns.
 
 ## 🎯 Overview
 
-This university mini-project demonstrates a practical application of reinforcement learning in education. The system adapts to each student's knowledge level and learning style, recommending appropriate content in real-time using a Q-Learning agent.
+This project demonstrates a practical application of reinforcement learning in education. The system adapts to each student's knowledge level and learning style, recommending appropriate content in real-time using a Q-Learning agent.
 
 ### Key Features
 - 🧠 **Q-Learning Agent** - Adaptive content recommendation
-- 📊 **Real-time Analytics** - Track progress and performance
-- 🎨 **Modern UI** - Beautiful landing page with Aceternity UI
+- 📚 **IIT JEE Content** - Real Previous Year Questions (PYQ) from Physics, Chemistry & Mathematics
+- 🌳 **Skill Tree System** - 48 skills across 3 subjects with progressive unlocking
+- 🎯 **Placement Test** - Initial assessment to unlock appropriate starting skills
+- 📊 **Real-time Analytics** - Track progress, accuracy, and rewards with beautiful charts
+- 🎨 **Modern Dark Theme UI** - Consistent, elegant interface
 - 🔐 **Secure Authentication** - JWT-based with refresh tokens
-- 📈 **Progress Tracking** - Detailed learning analytics
+- 📈 **Progress Tracking** - Detailed learning analytics with Recharts visualization
 - ⚡ **Fast Backend** - FastAPI with async support
-- 🎮 **Interactive Demo** - Try the system without signup
-- 🔍 **RL Visualization** - See how Q-Learning works
-- 🧪 **Comprehensive Tests** - 90%+ test coverage
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 - Node.js 18+
 - Python 3.8+
-- npm or yarn
+- pip and npm
 
-### 1. Frontend (Next.js)
+### Easy Start (Recommended)
 
+**Windows:**
 ```bash
-# Install dependencies
-npm install
-
-# Run development server
-npm run dev
+# Double-click start.bat or run in terminal:
+start.bat
 ```
 
-Visit: **http://localhost:3000**
+**Linux/Mac:**
+```bash
+# Run in terminal:
+./start.sh
+```
 
-### 2. Backend (FastAPI)
+The startup script will:
+1. Install Python dependencies (pip)
+2. Install Node.js dependencies (npm)
+3. Start Backend server on http://localhost:8001
+4. Start Frontend server on http://localhost:3000
+
+Both servers will open in separate terminal windows.
+
+### Manual Start
+
+#### 1. Backend (FastAPI)
 
 ```bash
-# Navigate to backend
 cd backend
 
 # Create virtual environment
 python -m venv venv
 
-# Activate virtual environment (Windows)
+# Activate virtual environment
+# Windows:
 venv\Scripts\activate
+# Linux/Mac:
+source venv/bin/activate
 
 # Install dependencies
 pip install -r requirements.txt

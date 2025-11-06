@@ -80,15 +80,15 @@ export default function LearningStyleQuiz() {
     const submitQuiz = async (finalAnswers: string[]) => {
         setSubmitting(true);
         try {
-            const token = localStorage.getItem('access_token');
-            const userId = localStorage.getItem('user_id');
+            const token = localStorage.getItem('token');
+            const username = localStorage.getItem('username');
 
-            if (!token || !userId) {
+            if (!token || !username) {
                 router.push('/login');
                 return;
             }
 
-            const result = await api.submitLearningStyle(userId, finalAnswers);
+            const result = await api.submitLearningStyle(username, finalAnswers);
 
             // Store results temporarily for the results page
             localStorage.setItem('learning_style_results', JSON.stringify(result));

@@ -86,10 +86,10 @@ export default function AchievementsPage() {
   if (loading) {
     return (
       <Sidebar>
-        <div className="min-h-screen flex items-center justify-center">
+        <div className="min-h-screen bg-black flex items-center justify-center">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading Achievements...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+            <p className="text-white text-xl">Loading achievements...</p>
           </div>
         </div>
       </Sidebar>
@@ -98,17 +98,20 @@ export default function AchievementsPage() {
 
   return (
     <Sidebar>
-      <div className="min-h-screen bg-gray-50 p-6">
-        <div className="max-w-7xl mx-auto">
+      <div className="min-h-screen bg-black text-white">
+        <div className="max-w-7xl mx-auto px-6 py-8">
           {/* Header */}
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">🏆 Achievements</h1>
-            <p className="text-gray-600">Earn badges and collect points for your accomplishments</p>
+          <div className="bg-gradient-to-b from-zinc-900 to-black border-b border-zinc-800 -mx-6 -mt-8 px-6 pt-8 pb-6 mb-8">
+            <h1 className="text-3xl font-bold mb-2 flex items-center gap-3">
+              <Award className="w-8 h-8 text-purple-400" />
+              Achievements
+            </h1>
+            <p className="text-gray-400">Earn badges and collect points for your accomplishments</p>
           </div>
 
           {/* Stats Dashboard */}
-          <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg p-6 text-white mb-6 shadow-lg">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg p-6 text-white mb-8 shadow-lg">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               <div className="text-center">
                 <Trophy className="w-12 h-12 mx-auto mb-2" />
                 <p className="text-3xl font-bold">{stats.total_badges}</p>
@@ -133,42 +136,42 @@ export default function AchievementsPage() {
           </div>
 
           {/* Tier Breakdown */}
-          <div className="grid grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-4 gap-4 mb-8">
             {['bronze', 'silver', 'gold', 'platinum'].map(tier => (
-              <div key={tier} className="bg-white p-4 rounded-lg shadow">
+              <div key={tier} className="bg-zinc-900 border border-zinc-800 p-4 rounded-lg">
                 <div className="flex items-center gap-2 mb-2">
                   <div
                     className="w-3 h-3 rounded-full"
                     style={{ backgroundColor: getTierColor(tier) }}
                   />
-                  <p className="font-semibold capitalize">{tier}</p>
+                  <p className="font-semibold capitalize text-white">{tier}</p>
                 </div>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-2xl font-bold text-white">
                   {(stats.by_tier as any)?.[tier] || 0}
                 </p>
-                <p className="text-xs text-gray-500">badges earned</p>
+                <p className="text-xs text-gray-400">badges earned</p>
               </div>
             ))}
           </div>
 
           {/* Filters */}
-          <div className="bg-white p-4 rounded-lg shadow mb-6">
+          <div className="bg-zinc-900 border border-zinc-800 p-4 rounded-lg mb-8">
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => setFilter('all')}
-                className={`px-4 py-2 rounded-lg ${filter === 'all' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                className={`px-4 py-2 rounded-lg transition-colors ${filter === 'all' ? 'bg-purple-600 text-white' : 'bg-zinc-800 text-gray-300 hover:bg-zinc-700'}`}
               >
                 All Badges
               </button>
               <button
                 onClick={() => setFilter('earned')}
-                className={`px-4 py-2 rounded-lg ${filter === 'earned' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                className={`px-4 py-2 rounded-lg transition-colors ${filter === 'earned' ? 'bg-green-600 text-white' : 'bg-zinc-800 text-gray-300 hover:bg-zinc-700'}`}
               >
                 Earned
               </button>
               <button
                 onClick={() => setFilter('locked')}
-                className={`px-4 py-2 rounded-lg ${filter === 'locked' ? 'bg-gray-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                className={`px-4 py-2 rounded-lg transition-colors ${filter === 'locked' ? 'bg-zinc-700 text-white' : 'bg-zinc-800 text-gray-300 hover:bg-zinc-700'}`}
               >
                 Locked
               </button>
@@ -176,7 +179,7 @@ export default function AchievementsPage() {
                 <button
                   key={cat}
                   onClick={() => setFilter(cat)}
-                  className={`px-4 py-2 rounded-lg capitalize ${filter === cat ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                  className={`px-4 py-2 rounded-lg capitalize transition-colors ${filter === cat ? 'bg-purple-600 text-white' : 'bg-zinc-800 text-gray-300 hover:bg-zinc-700'}`}
                 >
                   {cat}
                 </button>
@@ -193,7 +196,7 @@ export default function AchievementsPage() {
               return (
                 <div
                   key={badge.id}
-                  className={`bg-white p-6 rounded-lg shadow transition-all hover:shadow-lg ${!isEarned ? 'opacity-60' : ''
+                  className={`bg-zinc-900 border border-zinc-800 p-6 rounded-lg transition-all hover:shadow-lg hover:border-zinc-700 ${!isEarned ? 'opacity-60' : ''
                     }`}
                 >
                   <div className="text-center">
@@ -201,15 +204,15 @@ export default function AchievementsPage() {
                     <div
                       className="w-20 h-20 mx-auto mb-3 rounded-full flex items-center justify-center text-4xl"
                       style={{
-                        backgroundColor: isEarned ? badge.color + '20' : '#F3F4F6',
-                        border: `3px solid ${isEarned ? badge.color : '#D1D5DB'}`
+                        backgroundColor: isEarned ? badge.color + '20' : '#27272a',
+                        border: `3px solid ${isEarned ? badge.color : '#52525b'}`
                       }}
                     >
-                      {isEarned ? badge.icon : <Lock className="w-8 h-8 text-gray-400" />}
+                      {isEarned ? badge.icon : <Lock className="w-8 h-8 text-gray-500" />}
                     </div>
 
                     {/* Badge Name */}
-                    <h3 className="font-bold text-gray-900 mb-1">{badge.name}</h3>
+                    <h3 className="font-bold text-white mb-1">{badge.name}</h3>
 
                     {/* Tier Badge */}
                     <div className="mb-2">
@@ -225,21 +228,21 @@ export default function AchievementsPage() {
                     </div>
 
                     {/* Description */}
-                    <p className="text-sm text-gray-600 mb-3">{badge.description}</p>
+                    <p className="text-sm text-gray-400 mb-3">{badge.description}</p>
 
                     {/* Points */}
                     <div className="flex items-center justify-center gap-1 text-sm">
                       <Star className="w-4 h-4 text-yellow-500" />
-                      <span className="font-semibold">{badge.points} pts</span>
+                      <span className="font-semibold text-white">{badge.points} pts</span>
                     </div>
 
                     {/* Earned Date */}
                     {isEarned && earnedBadge && (
-                      <div className="mt-3 pt-3 border-t border-gray-200">
-                        <p className="text-xs text-gray-500">
+                      <div className="mt-3 pt-3 border-t border-zinc-800">
+                        <p className="text-xs text-gray-400">
                           Earned {new Date(earnedBadge.earned_at).toLocaleDateString()}
                         </p>
-                        <p className="text-xs text-gray-400 mt-1">
+                        <p className="text-xs text-gray-500 mt-1">
                           {earnedBadge.verification_code}
                         </p>
                       </div>
@@ -251,19 +254,22 @@ export default function AchievementsPage() {
           </div>
 
           {filteredBadges.length === 0 && (
-            <div className="text-center py-12 bg-white rounded-lg shadow">
-              <Lock className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500 text-lg">No badges found matching your filter</p>
+            <div className="text-center py-12 bg-zinc-900 border border-zinc-800 rounded-lg">
+              <Lock className="w-16 h-16 text-gray-500 mx-auto mb-4" />
+              <p className="text-gray-400 text-lg">No badges found matching your filter</p>
             </div>
           )}
 
           {/* Recent Achievements */}
           {earnedBadges.length > 0 && filter === 'all' && (
-            <div className="mt-8 bg-white p-6 rounded-lg shadow">
-              <h2 className="text-xl font-bold mb-4">🎉 Recent Achievements</h2>
+            <div className="mt-8 bg-zinc-900 border border-zinc-800 p-6 rounded-lg">
+              <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+                <Trophy className="w-6 h-6 text-yellow-500" />
+                Recent Achievements
+              </h2>
               <div className="space-y-3">
                 {earnedBadges.slice(-5).reverse().map(eb => (
-                  <div key={eb.id} className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
+                  <div key={eb.id} className="flex items-center gap-4 p-3 bg-zinc-800 rounded-lg border border-zinc-700">
                     <div
                       className="w-12 h-12 rounded-full flex items-center justify-center text-2xl"
                       style={{
@@ -274,14 +280,14 @@ export default function AchievementsPage() {
                       {eb.badge.icon}
                     </div>
                     <div className="flex-1">
-                      <p className="font-semibold">{eb.badge.name}</p>
-                      <p className="text-sm text-gray-600">{eb.badge.description}</p>
+                      <p className="font-semibold text-white">{eb.badge.name}</p>
+                      <p className="text-sm text-gray-400">{eb.badge.description}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-gray-400">
                         {new Date(eb.earned_at).toLocaleDateString()}
                       </p>
-                      <p className="text-sm font-semibold text-yellow-600">
+                      <p className="text-sm font-semibold text-yellow-500">
                         +{eb.badge.points} pts
                       </p>
                     </div>

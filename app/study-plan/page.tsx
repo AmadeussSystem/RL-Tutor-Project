@@ -107,10 +107,10 @@ export default function StudyPlanPage() {
   if (loading) {
     return (
       <Sidebar>
-        <div className="min-h-screen flex items-center justify-center">
+        <div className="min-h-screen bg-black flex items-center justify-center">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading Study Plans...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+            <p className="text-white text-xl">Loading study plans...</p>
           </div>
         </div>
       </Sidebar>
@@ -119,27 +119,35 @@ export default function StudyPlanPage() {
 
   return (
     <Sidebar>
-      <div className="min-h-screen bg-gray-50 p-6">
-        <div className="max-w-7xl mx-auto">
+      <div className="min-h-screen bg-black text-white">
+        <div className="max-w-7xl mx-auto px-6 py-8">
           {/* Header */}
-          <div className="flex justify-between items-center mb-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">📅 Study Plans</h1>
-              <p className="text-gray-600">Personalized learning schedules tailored to your goals</p>
+          <div className="bg-gradient-to-b from-zinc-900 to-black border-b border-zinc-800 -mx-6 -mt-8 px-6 pt-8 pb-6 mb-8">
+            <div className="flex justify-between items-center">
+              <div>
+                <h1 className="text-3xl font-bold mb-2 flex items-center gap-3">
+                  <Calendar className="w-8 h-8 text-purple-400" />
+                  Study Plans
+                </h1>
+                <p className="text-gray-400">Personalized learning schedules tailored to your goals</p>
+              </div>
+              <button
+                onClick={() => setShowCreateForm(true)}
+                className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-lg font-semibold transition-all"
+              >
+                + Create New Plan
+              </button>
             </div>
-            <button
-              onClick={() => setShowCreateForm(true)}
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold"
-            >
-              + Create New Plan
-            </button>
           </div>
 
           {/* Today's Tasks Dashboard */}
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-6 text-white mb-6 shadow-lg">
-            <h2 className="text-2xl font-bold mb-4">📚 Today's Tasks</h2>
+          <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg p-6 text-white mb-8 shadow-lg">
+            <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+              <Target className="w-7 h-7" />
+              Today's Tasks
+            </h2>
 
-            <div className="grid grid-cols-3 gap-4 mb-4">
+            <div className="grid grid-cols-3 gap-4 mb-6">
               <div className="bg-white bg-opacity-20 rounded-lg p-4">
                 <CheckCircle className="w-8 h-8 mb-2" />
                 <p className="text-3xl font-bold">{completedCount}/{todayTasks.length}</p>
@@ -200,35 +208,35 @@ export default function StudyPlanPage() {
 
           {/* Active Study Plans */}
           <div className="space-y-4">
-            <h2 className="text-xl font-bold text-gray-900">Your Study Plans</h2>
+            <h2 className="text-xl font-bold text-white mb-4">Your Study Plans</h2>
 
             {plans.length === 0 ? (
-              <div className="text-center py-12 bg-white rounded-lg shadow">
-                <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600 text-lg mb-2">No study plans yet</p>
-                <p className="text-gray-500 mb-4">Create a personalized plan to reach your learning goals</p>
+              <div className="text-center py-12 bg-zinc-900 border border-zinc-800 rounded-lg">
+                <Calendar className="w-16 h-16 text-gray-500 mx-auto mb-4" />
+                <p className="text-gray-300 text-lg mb-2">No study plans yet</p>
+                <p className="text-gray-400 mb-4">Create a personalized plan to reach your learning goals</p>
                 <button
                   onClick={() => setShowCreateForm(true)}
-                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-lg transition-all"
                 >
                   Create Your First Plan
                 </button>
               </div>
             ) : (
               plans.map(plan => (
-                <div key={plan.id} className="bg-white rounded-lg shadow p-6">
+                <div key={plan.id} className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 hover:border-zinc-700 transition-all">
                   <div className="flex justify-between items-start mb-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
-                        <h3 className="text-xl font-bold text-gray-900">{plan.title}</h3>
+                        <h3 className="text-xl font-bold text-white">{plan.title}</h3>
                         {plan.performance_trend && (
                           <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getTrendColor(plan.performance_trend)}`}>
                             {getTrendIcon(plan.performance_trend)} {plan.performance_trend}
                           </span>
                         )}
                       </div>
-                      <p className="text-gray-600 mb-2">{plan.description}</p>
-                      <div className="flex items-center gap-4 text-sm text-gray-500">
+                      <p className="text-gray-400 mb-2">{plan.description}</p>
+                      <div className="flex items-center gap-4 text-sm text-gray-400">
                         <div className="flex items-center gap-1">
                           <Calendar className="w-4 h-4" />
                           <span>Due: {new Date(plan.target_date).toLocaleDateString()}</span>
@@ -243,9 +251,9 @@ export default function StudyPlanPage() {
                         </div>
                       </div>
                     </div>
-                    <div className={`px-3 py-1 rounded-full text-sm font-semibold ${plan.status === 'active' ? 'bg-green-100 text-green-800' :
-                      plan.status === 'completed' ? 'bg-blue-100 text-blue-800' :
-                        'bg-gray-100 text-gray-800'
+                    <div className={`px-3 py-1 rounded-full text-sm font-semibold ${plan.status === 'active' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
+                      plan.status === 'completed' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
+                        'bg-gray-500/20 text-gray-400 border border-gray-500/30'
                       }`}>
                       {plan.status}
                     </div>
@@ -254,15 +262,15 @@ export default function StudyPlanPage() {
                   {/* Progress Bar */}
                   <div className="mb-4">
                     <div className="flex justify-between text-sm mb-2">
-                      <span className="text-gray-600">Progress</span>
-                      <span className="font-semibold text-gray-900">{Math.round(plan.progress_percentage)}%</span>
+                      <span className="text-gray-400">Progress</span>
+                      <span className="font-semibold text-white">{Math.round(plan.progress_percentage)}%</span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-3">
+                    <div className="w-full bg-zinc-800 rounded-full h-3">
                       <div
-                        className={`h-3 rounded-full transition-all ${plan.progress_percentage >= 75 ? 'bg-green-600' :
-                          plan.progress_percentage >= 50 ? 'bg-blue-600' :
-                            plan.progress_percentage >= 25 ? 'bg-yellow-600' :
-                              'bg-gray-400'
+                        className={`h-3 rounded-full transition-all ${plan.progress_percentage >= 75 ? 'bg-green-500' :
+                          plan.progress_percentage >= 50 ? 'bg-blue-500' :
+                            plan.progress_percentage >= 25 ? 'bg-yellow-500' :
+                              'bg-gray-500'
                           }`}
                         style={{ width: `${plan.progress_percentage}%` }}
                       />
@@ -271,11 +279,11 @@ export default function StudyPlanPage() {
 
                   {/* Actions */}
                   <div className="flex gap-2">
-                    <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                    <button className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors">
                       View Details
                     </button>
                     {plan.is_active && (
-                      <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                      <button className="px-4 py-2 border border-zinc-700 hover:bg-zinc-800 rounded-lg transition-colors">
                         Adjust Plan
                       </button>
                     )}
@@ -287,13 +295,13 @@ export default function StudyPlanPage() {
 
           {/* Create Plan Modal */}
           {showCreateForm && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onClick={() => setShowCreateForm(false)}>
-              <div className="bg-white rounded-lg p-6 max-w-2xl w-full" onClick={e => e.stopPropagation()}>
-                <h2 className="text-2xl font-bold mb-4">Create Study Plan</h2>
-                <p className="text-gray-600 mb-4">Feature coming soon! Study plan generation will help you create personalized learning schedules.</p>
+            <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50" onClick={() => setShowCreateForm(false)}>
+              <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 max-w-2xl w-full" onClick={e => e.stopPropagation()}>
+                <h2 className="text-2xl font-bold mb-4 text-white">Create Study Plan</h2>
+                <p className="text-gray-400 mb-4">Feature coming soon! Study plan generation will help you create personalized learning schedules.</p>
                 <button
                   onClick={() => setShowCreateForm(false)}
-                  className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
+                  className="px-4 py-2 bg-zinc-700 hover:bg-zinc-600 text-white rounded-lg transition-colors"
                 >
                   Close
                 </button>

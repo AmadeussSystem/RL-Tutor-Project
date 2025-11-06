@@ -28,7 +28,9 @@ export default function RegisterPage() {
                 formData.password,
                 formData.fullName || undefined
             );
-            router.push('/dashboard');
+            
+            // New users always need to take placement test
+            router.push('/placement-test');
         } catch (err) {
             // Error is handled by AuthContext
         }

@@ -7,6 +7,7 @@ from sqlalchemy import func
 from app.core.database import get_db
 from app.models.models import Student, Content, LearningSession, StudentKnowledge
 from app.models.learning_style import LearningStyleProfile
+from app.models.mastery import MasterySkill
 from app.models.schemas import SessionStart, AnswerSubmit, SessionResponse, ContentResponse
 from app.services.rl_agent import agent
 from app.services.student_model import StudentModelService
@@ -28,9 +29,51 @@ def get_current_student_id(username: str, db: Session) -> int:
 @router.post("/start", response_model=ContentResponse)
 def start_session(session_data: SessionStart, username: str, db: Session = Depends(get_db)):
     """
-    Start a new learning session and get recommended content
+    Start a new learning session and get recommended content.
+    Validates skill locks if topic is provided.
     """
     student_id = get_current_student_id(username, db)
+    
+    # **SKILL LOCK VALIDATION**: Check if topic requires unlocked skill
+    if session_data.topic:
+        # Map topic to skill name (convert underscore to space and capitalize)
+        topic_to_skill_map = {
+            "sets_and_relations": "Sets and Relations",
+            "quadratic_equations": "Quadratic Equations",
+            "polynomials": "Polynomials",
+            "sequences_and_series": "Sequences and Series",
+            "complex_numbers": "Complex Numbers",
+            "permutations_and_combinations": "Permutations and Combinations",
+            "trigonometric_ratios": "Trigonometric Ratios",
+            "trigonometric_identities": "Trigonometric Identities",
+            "inverse_trigonometric_functions": "Inverse Trigonometric Functions",
+            "straight_lines": "Straight Lines",
+            "circles": "Circles",
+            "conic_sections": "Conic Sections",
+            "limits_and_continuity": "Limits and Continuity",
+            "differentiation": "Differentiation",
+            "integration": "Integration",
+            "mechanics": "Mechanics",
+            "waves": "Waves and Oscillations",
+            "thermodynamics": "Thermodynamics",
+            "electromagnetism": "Electromagnetism",
+            "optics": "Optics",
+            "physical_chemistry": "Physical Chemistry",
+            "inorganic_chemistry": "Inorganic Chemistry",
+            "organic_chemistry": "Organic Chemistry",
+            "statistics": "Statistics"
+        }
+        
+        skill_name = topic_to_skill_map.get(session_data.topic)
+        if skill_name:
+            # Check if skill exists and is unlocked
+            skill = db.query(MasterySkill).filter(MasterySkill.name == skill_name).first()
+            if skill:
+                if not skill.is_unlocked_for_student(student_id, db):
+                    raise HTTPException(
+                        status_code=status.HTTP_403_FORBIDDEN,
+                        detail=f"Skill '{skill_name}' is locked. Complete prerequisites first."
+                    )
     
     # Get student's knowledge state
     knowledge_state = StudentModelService.get_knowledge_state(db, student_id)

@@ -19,6 +19,7 @@ export default function LearnPage() {
     const [startTime, setStartTime] = useState<number>(Date.now());
     const [selectedTopic, setSelectedTopic] = useState<string>('');
     const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
     const [sessionStats, setSessionStats] = useState({
         totalQuestions: 0,
         correctAnswers: 0,
@@ -37,13 +38,14 @@ export default function LearnPage() {
         try {
             setIsLoading(true);
             setFeedback(null);
+            setError(null);
             const content = await api.startSession(user, topic);
             setCurrentContent(content);
             setStartTime(Date.now());
             setSelectedAnswer('');
             setSelectedTopic(topic || '');
         } catch (err: any) {
-            alert(err.message || 'Failed to start session');
+            setError(err.message || 'Failed to start session');
         } finally {
             setIsLoading(false);
         }
@@ -54,6 +56,7 @@ export default function LearnPage() {
 
         try {
             setIsSubmitting(true);
+            setError(null);
             const timeSpent = (Date.now() - startTime) / 1000; // Convert to seconds
 
             const result = await api.submitAnswer(user, {
@@ -69,7 +72,7 @@ export default function LearnPage() {
                 totalReward: prev.totalReward + result.reward,
             }));
         } catch (err: any) {
-            alert(err.message || 'Failed to submit answer');
+            setError(err.message || 'Failed to submit answer');
         } finally {
             setIsSubmitting(false);
         }
@@ -86,25 +89,60 @@ export default function LearnPage() {
         }
     };
 
-    // JEE Subject Topics
+    // JEE Subject Topics - Organized by Chapters matching Skill Tree
+    // Topics must match the Content table in backend
     const subjects = [
         {
+            name: 'Mathematics',
+            chapters: [
+                { name: 'Sets and Relations', topics: ['sets_and_relations'] },
+                { name: 'Quadratic Equations', topics: ['quadratic_equations'] },
+                { name: 'Polynomials', topics: ['polynomials'] },
+                { name: 'Sequences and Series', topics: ['sequences_and_series'] },
+                { name: 'Complex Numbers', topics: ['complex_numbers'] },
+                { name: 'Permutations and Combinations', topics: ['permutations_and_combinations'] },
+                { name: 'Trigonometric Ratios', topics: ['trigonometric_ratios'] },
+                { name: 'Trigonometric Identities', topics: ['trigonometric_identities'] },
+                { name: 'Inverse Trigonometric Functions', topics: ['inverse_trigonometric_functions'] },
+                { name: 'Straight Lines', topics: ['straight_lines'] },
+                { name: 'Circles', topics: ['circles'] },
+                { name: 'Conic Sections', topics: ['conic_sections'] },
+                { name: 'Limits and Continuity', topics: ['limits_and_continuity'] },
+                { name: 'Differentiation', topics: ['differentiation'] },
+                { name: 'Integration', topics: ['integration'] },
+            ],
+            description: 'Practice IIT JEE Mathematics problems',
+            icon: '📐'
+        },
+        {
             name: 'Physics',
-            topics: ['mechanics', 'electromagnetism', 'optics', 'modern_physics'],
-            description: 'Practice JEE Physics problems',
+            chapters: [
+                { name: 'Mechanics', topics: ['mechanics'] },
+                { name: 'Waves and Oscillations', topics: ['waves'] },
+                { name: 'Thermodynamics', topics: ['thermodynamics'] },
+                { name: 'Electromagnetism', topics: ['electromagnetism'] },
+                { name: 'Optics', topics: ['optics'] },
+            ],
+            description: 'Practice IIT JEE Physics problems',
             icon: '⚛️'
         },
         {
             name: 'Chemistry',
-            topics: ['physical_chemistry', 'organic_chemistry', 'inorganic_chemistry'],
-            description: 'Practice JEE Chemistry problems',
+            chapters: [
+                { name: 'Physical Chemistry', topics: ['physical_chemistry'] },
+                { name: 'Inorganic Chemistry', topics: ['inorganic_chemistry'] },
+                { name: 'Organic Chemistry', topics: ['organic_chemistry'] },
+            ],
+            description: 'Practice IIT JEE Chemistry problems',
             icon: '🧪'
         },
         {
-            name: 'Mathematics',
-            topics: ['algebra', 'calculus', 'coordinate_geometry', 'trigonometry', 'vectors', 'probability'],
-            description: 'Practice JEE Mathematics problems',
-            icon: '📐'
+            name: 'Statistics & Probability',
+            chapters: [
+                { name: 'Statistics and Probability', topics: ['statistics'] },
+            ],
+            description: 'Practice Statistics and Probability problems',
+            icon: '📊'
         }
     ];
 
@@ -131,6 +169,50 @@ export default function LearnPage() {
                 </div>
 
                 <div className="max-w-5xl mx-auto px-6 py-8">
+                    {/* Error Message */}
+                    {error && (
+                        <div className="mb-6 bg-gradient-to-r from-red-900/20 to-red-800/20 border border-red-500/30 rounded-xl p-6 backdrop-blur-sm">
+                            <div className="flex items-start gap-4">
+                                <div className="flex-shrink-0">
+                                    <div className="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center">
+                                        <XCircle className="w-6 h-6 text-red-400" />
+                                    </div>
+                                </div>
+                                <div className="flex-1">
+                                    <h3 className="text-lg font-semibold text-red-300 mb-1">
+                                        {error.includes('locked') ? 'Skill Locked' : 'Error'}
+                                    </h3>
+                                    <p className="text-red-200/80 mb-4">{error}</p>
+                                    {error.includes('locked') && (
+                                        <div className="flex gap-3">
+                                            <Link
+                                                href="/skill-tree"
+                                                className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg font-medium transition-colors flex items-center gap-2"
+                                            >
+                                                View Skill Tree
+                                                <ArrowRight className="w-4 h-4" />
+                                            </Link>
+                                            <button
+                                                onClick={() => setError(null)}
+                                                className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg font-medium transition-colors"
+                                            >
+                                                Dismiss
+                                            </button>
+                                        </div>
+                                    )}
+                                    {!error.includes('locked') && (
+                                        <button
+                                            onClick={() => setError(null)}
+                                            className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg font-medium transition-colors"
+                                        >
+                                            Dismiss
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Session Stats */}
                     {sessionStats.totalQuestions > 0 && (
                         <div className="bg-zinc-950 border border-zinc-800 rounded-xl p-4 mb-6 flex justify-between items-center">
@@ -161,26 +243,35 @@ export default function LearnPage() {
                         /* Topic Selection */
                         <div className="bg-zinc-950 border border-zinc-800 rounded-xl p-8">
                             <h2 className="text-3xl font-bold mb-4">Choose Your Subject</h2>
-                            <p className="text-gray-400 mb-8">Select a subject to start practicing, or let the RL agent pick for you!</p>
+                            <p className="text-gray-400 mb-8">Select a chapter to start practicing, or let the RL agent pick for you!</p>
 
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                            <div className="space-y-6">
                                 {subjects.map((subject) => (
-                                    <button
-                                        key={subject.name}
-                                        onClick={() => {
-                                            // Pick a random topic from this subject
-                                            const randomTopic = subject.topics[Math.floor(Math.random() * subject.topics.length)];
-                                            startSession(randomTopic);
-                                        }}
-                                        disabled={isLoading}
-                                        className="p-6 bg-zinc-900 border border-zinc-700 rounded-xl hover:border-purple-500 transition-all duration-200 text-left group disabled:opacity-50"
-                                    >
-                                        <div className="text-4xl mb-3">{subject.icon}</div>
-                                        <h3 className="text-xl font-semibold mb-2 group-hover:text-purple-400">
-                                            {subject.name}
-                                        </h3>
-                                        <p className="text-gray-400 text-sm">{subject.description}</p>
-                                    </button>
+                                    <div key={subject.name}>
+                                        <div className="flex items-center gap-3 mb-4">
+                                            <span className="text-3xl">{subject.icon}</span>
+                                            <div>
+                                                <h3 className="text-2xl font-bold text-white">{subject.name}</h3>
+                                                <p className="text-sm text-gray-400">{subject.description}</p>
+                                            </div>
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 ml-4 mb-6">
+                                            {subject.chapters?.map((chapter: any) => (
+                                                <button
+                                                    key={chapter.name}
+                                                    onClick={() => {
+                                                        const randomTopic = chapter.topics[Math.floor(Math.random() * chapter.topics.length)];
+                                                        startSession(randomTopic);
+                                                    }}
+                                                    disabled={isLoading}
+                                                    className="p-4 bg-zinc-900 border border-zinc-700 rounded-lg hover:border-purple-500 hover:bg-zinc-800/50 transition-all duration-200 text-left group disabled:opacity-50"
+                                                >
+                                                    <h4 className="font-semibold text-white group-hover:text-purple-400 mb-1">{chapter.name}</h4>
+                                                    <p className="text-xs text-gray-400">{chapter.topics.length} topics</p>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
                                 ))}
                             </div>
 

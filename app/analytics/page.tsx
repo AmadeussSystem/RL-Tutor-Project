@@ -7,6 +7,20 @@ import { useAuth } from '@/app/contexts/AuthContext';
 import { api } from '@/app/api/client';
 import Sidebar from '@/app/components/Sidebar';
 import { Brain, TrendingUp, Award, Target, Clock, BarChart3 } from 'lucide-react';
+import {
+    LineChart,
+    Line,
+    AreaChart,
+    Area,
+    BarChart,
+    Bar,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+    ResponsiveContainer,
+    Legend
+} from 'recharts';
 
 interface PerformanceData {
     date: string;
@@ -167,73 +181,127 @@ export default function AnalyticsPage() {
                         </h2>
 
                         {performanceData.length > 0 ? (
-                            <>
-                                {/* Accuracy Chart */}
-                                <div className="mb-8">
-                                    <h3 className="text-lg font-semibold mb-4 text-gray-300">Accuracy Trend</h3>
-                                    <div className="space-y-3">
-                                        {performanceData.map((data, idx) => (
-                                            <div key={idx} className="flex items-center gap-4">
-                                                <div className="w-24 text-sm text-gray-400">{data.date}</div>
-                                                <div className="flex-1 bg-zinc-900 rounded-full h-8 overflow-hidden relative">
-                                                    <div
-                                                        className="bg-gradient-to-r from-green-500 to-emerald-400 h-full flex items-center justify-end pr-3 transition-all duration-500"
-                                                        style={{ width: `${(data.accuracy / maxAccuracy) * 100}%` }}
-                                                    >
-                                                        <span className="text-xs font-semibold text-white">
-                                                            {data.accuracy.toFixed(0)}%
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* Attempts Chart */}
-                                <div className="mb-8">
-                                    <h3 className="text-lg font-semibold mb-4 text-gray-300">Daily Attempts</h3>
-                                    <div className="space-y-3">
-                                        {performanceData.map((data, idx) => (
-                                            <div key={idx} className="flex items-center gap-4">
-                                                <div className="w-24 text-sm text-gray-400">{data.date}</div>
-                                                <div className="flex-1 bg-zinc-900 rounded-full h-8 overflow-hidden relative">
-                                                    <div
-                                                        className="bg-gradient-to-r from-blue-500 to-purple-500 h-full flex items-center justify-end pr-3 transition-all duration-500"
-                                                        style={{ width: `${(data.attempts / maxAttempts) * 100}%` }}
-                                                    >
-                                                        <span className="text-xs font-semibold text-white">
-                                                            {data.attempts}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* Rewards Chart */}
+                            <div className="space-y-8">
+                                {/* Combined Multi-Line Chart */}
                                 <div>
-                                    <h3 className="text-lg font-semibold mb-4 text-gray-300">Total Rewards</h3>
-                                    <div className="space-y-3">
-                                        {performanceData.map((data, idx) => (
-                                            <div key={idx} className="flex items-center gap-4">
-                                                <div className="w-24 text-sm text-gray-400">{data.date}</div>
-                                                <div className="flex-1 bg-zinc-900 rounded-full h-8 overflow-hidden relative">
-                                                    <div
-                                                        className="bg-gradient-to-r from-amber-500 to-orange-400 h-full flex items-center justify-end pr-3 transition-all duration-500"
-                                                        style={{ width: `${((data.avg_reward || 0) / Math.max(...performanceData.map(d => d.avg_reward || 0), 1)) * 100}%` }}
-                                                    >
-                                                        <span className="text-xs font-semibold text-white">
-                                                            +{(data.avg_reward || 0).toFixed(1)}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
+                                    <h3 className="text-lg font-semibold mb-4 text-gray-300">Performance Metrics</h3>
+                                    <ResponsiveContainer width="100%" height={400}>
+                                        <LineChart data={performanceData}>
+                                            <defs>
+                                                <linearGradient id="colorAccuracy" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                                                    <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                                                </linearGradient>
+                                            </defs>
+                                            <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
+                                            <XAxis 
+                                                dataKey="date" 
+                                                stroke="#71717a"
+                                                style={{ fontSize: '11px' }}
+                                                angle={-45}
+                                                textAnchor="end"
+                                                height={60}
+                                            />
+                                            <YAxis 
+                                                yAxisId="left"
+                                                stroke="#10b981"
+                                                style={{ fontSize: '12px' }}
+                                                label={{ value: 'Accuracy %', angle: -90, position: 'insideLeft', style: { fill: '#10b981' } }}
+                                            />
+                                            <YAxis 
+                                                yAxisId="right"
+                                                orientation="right"
+                                                stroke="#8b5cf6"
+                                                style={{ fontSize: '12px' }}
+                                                label={{ value: 'Attempts', angle: 90, position: 'insideRight', style: { fill: '#8b5cf6' } }}
+                                            />
+                                            <Tooltip
+                                                contentStyle={{
+                                                    backgroundColor: '#18181b',
+                                                    border: '1px solid #3f3f46',
+                                                    borderRadius: '8px',
+                                                    color: '#fff'
+                                                }}
+                                                formatter={(value: any, name: string) => {
+                                                    if (name === 'accuracy') return [`${value.toFixed(1)}%`, 'Accuracy'];
+                                                    if (name === 'attempts') return [value, 'Attempts'];
+                                                    if (name === 'avg_reward') return [`+${value.toFixed(1)}`, 'Avg Reward'];
+                                                    return [value, name];
+                                                }}
+                                            />
+                                            <Legend 
+                                                wrapperStyle={{ paddingTop: '20px' }}
+                                                formatter={(value) => {
+                                                    if (value === 'accuracy') return 'Accuracy';
+                                                    if (value === 'attempts') return 'Attempts';
+                                                    if (value === 'avg_reward') return 'Avg Reward';
+                                                    return value;
+                                                }}
+                                            />
+                                            <Line
+                                                yAxisId="left"
+                                                type="monotone"
+                                                dataKey="accuracy"
+                                                stroke="#10b981"
+                                                strokeWidth={3}
+                                                dot={{ fill: '#10b981', r: 4 }}
+                                                activeDot={{ r: 6 }}
+                                            />
+                                            <Line
+                                                yAxisId="right"
+                                                type="monotone"
+                                                dataKey="attempts"
+                                                stroke="#8b5cf6"
+                                                strokeWidth={3}
+                                                dot={{ fill: '#8b5cf6', r: 4 }}
+                                                activeDot={{ r: 6 }}
+                                            />
+                                        </LineChart>
+                                    </ResponsiveContainer>
                                 </div>
-                            </>
+
+                                {/* Rewards Bar Chart */}
+                                <div>
+                                    <h3 className="text-lg font-semibold mb-4 text-gray-300">Daily Rewards</h3>
+                                    <ResponsiveContainer width="100%" height={300}>
+                                        <BarChart data={performanceData}>
+                                            <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
+                                            <XAxis 
+                                                dataKey="date" 
+                                                stroke="#71717a"
+                                                style={{ fontSize: '11px' }}
+                                                angle={-45}
+                                                textAnchor="end"
+                                                height={60}
+                                            />
+                                            <YAxis 
+                                                stroke="#71717a"
+                                                style={{ fontSize: '12px' }}
+                                            />
+                                            <Tooltip
+                                                contentStyle={{
+                                                    backgroundColor: '#18181b',
+                                                    border: '1px solid #3f3f46',
+                                                    borderRadius: '8px',
+                                                    color: '#fff'
+                                                }}
+                                                formatter={(value: any) => [`+${value.toFixed(1)}`, 'Reward']}
+                                            />
+                                            <Bar 
+                                                dataKey="avg_reward" 
+                                                fill="url(#barGradient)"
+                                                radius={[8, 8, 0, 0]}
+                                            />
+                                            <defs>
+                                                <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="0%" stopColor="#f59e0b" stopOpacity={1} />
+                                                    <stop offset="100%" stopColor="#d97706" stopOpacity={1} />
+                                                </linearGradient>
+                                            </defs>
+                                        </BarChart>
+                                    </ResponsiveContainer>
+                                </div>
+                            </div>
                         ) : (
                             <div className="text-center py-12">
                                 <Target className="w-16 h-16 text-gray-600 mx-auto mb-4" />

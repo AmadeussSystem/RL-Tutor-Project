@@ -257,6 +257,33 @@ class ApiClient {
     async getLearningStyle(userId: string): Promise<any> {
         return this.request(`/students/${userId}/learning-style`);
     }
+
+    // ==================== PLACEMENT TEST ENDPOINTS ====================
+    async getPlacementStatus(token: string): Promise<{ completed: boolean; mastery_count: number }> {
+        return this.request('/placement/status', {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+        });
+    }
+
+    async getPlacementQuestions(token: string): Promise<any> {
+        return this.request('/placement/test/questions', {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+        });
+    }
+
+    async submitPlacementTest(token: string, answers: any): Promise<any> {
+        return this.request('/placement/test/submit', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify(answers),
+        });
+    }
 }
 
 // Export singleton instance

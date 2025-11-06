@@ -116,6 +116,12 @@ class QLearningAgent:
         
         self.q_table[state, action] = new_q
         self.total_updates += 1
+        
+        # Track reward for statistics
+        self.episode_rewards.append(reward)
+        # Keep only last 1000 rewards to avoid memory issues
+        if len(self.episode_rewards) > 1000:
+            self.episode_rewards = self.episode_rewards[-1000:]
     
     def calculate_reward(self, 
                         is_correct: bool, 
@@ -233,7 +239,8 @@ class QLearningAgent:
             'learning_rate': self.learning_rate,
             'discount_factor': self.discount_factor,
             'epsilon': self.epsilon,
-            'total_updates': self.total_updates
+            'total_updates': self.total_updates,
+            'episode_rewards': self.episode_rewards  # Save rewards history
         }
         with open(filepath.replace('.npy', '_meta.json'), 'w') as f:
             json.dump(metadata, f, indent=2)
@@ -249,10 +256,14 @@ class QLearningAgent:
                 with open(meta_path, 'r') as f:
                     metadata = json.load(f)
                     self.total_updates = metadata.get('total_updates', 0)
+                    self.episode_rewards = metadata.get('episode_rewards', [])
     
     def get_statistics(self) -> Dict:
         """Get agent training statistics"""
         q_table_size = self.q_table.shape[0] * self.q_table.shape[1] if len(self.q_table.shape) > 1 else 0
+        
+        # Calculate average reward from tracked rewards
+        avg_reward = float(np.mean(self.episode_rewards)) if len(self.episode_rewards) > 0 else 0.0
         
         return {
             'total_sessions': self.total_updates,
@@ -264,7 +275,7 @@ class QLearningAgent:
             'learning_rate': self.learning_rate,
             'epsilon': self.epsilon,
             'exploration_rate': self.epsilon,  # Frontend expects this
-            'avg_reward': float(np.mean(self.q_table)) if self.total_updates > 0 else 0.0
+            'avg_reward': avg_reward
         }
 
 

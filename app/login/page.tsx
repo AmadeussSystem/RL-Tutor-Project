@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/app/contexts/AuthContext';
+import { api } from '@/app/api/client';
 import { Spotlight } from '@/components/ui/spotlight';
 import { Brain } from 'lucide-react';
 
@@ -21,6 +22,21 @@ export default function LoginPage() {
 
         try {
             await login(formData.username, formData.password);
+            
+            // Check placement status after login
+            const token = localStorage.getItem('token');
+            if (token) {
+                try {
+                    const status = await api.getPlacementStatus(token);
+                    if (!status.completed) {
+                        router.push('/placement-test');
+                        return;
+                    }
+                } catch (err) {
+                    console.error('Failed to check placement status:', err);
+                }
+            }
+            
             router.push('/dashboard');
         } catch (err) {
             // Error is handled by AuthContext

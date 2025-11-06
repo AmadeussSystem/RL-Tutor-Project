@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from typing import List, Dict, Any
 from app.core.database import get_db
 from app.models.models import Student, StudentKnowledge, LearningSession
+from app.models.mastery import StudentMastery
 from app.models.skill_gap import SkillGap, Skill, PreAssessmentResult
 from app.api.deps import get_current_student
 from app.services.student_model import StudentModelService
@@ -22,6 +23,20 @@ def analyze_skill_gaps(
     """
     Analyze student's skill gaps based on performance history
     """
+    # Clean up old/invalid topic entries (old topics that don't exist in JEE curriculum)
+    valid_topics = [
+        'mechanics', 'electromagnetism', 'optics', 'modern_physics',
+        'physical_chemistry', 'organic_chemistry', 'inorganic_chemistry',
+        'algebra', 'calculus', 'coordinate_geometry', 'trigonometry', 'vectors', 'probability'
+    ]
+    
+    # Delete gaps for old invalid topics
+    db.query(SkillGap).filter(
+        SkillGap.student_id == current_student.id,
+        ~SkillGap.topic.in_(valid_topics)
+    ).delete(synchronize_session=False)
+    db.commit()
+    
     # Get student's knowledge state
     knowledge_state = StudentModelService.get_knowledge_state(db, current_student.id)
     
@@ -30,14 +45,39 @@ def analyze_skill_gaps(
         LearningSession.student_id == current_student.id
     ).order_by(LearningSession.timestamp.desc()).limit(50).all()
     
-    # Analyze gaps
+    # Analyze gaps for actual JEE topics
     gaps = []
     
-    # Check each topic
-    topics = ['algebra', 'calculus', 'geometry', 'statistics']
-    for topic in topics:
-        score_key = f'{topic}_score'
-        score = knowledge_state.get(score_key, 0.0)
+    # Physics topics
+    physics_topics = [
+        ('mechanics', 'Mechanics'),
+        ('electromagnetism', 'Electromagnetism'),
+        ('optics', 'Optics'),
+        ('modern_physics', 'Modern Physics')
+    ]
+    
+    # Chemistry topics
+    chemistry_topics = [
+        ('physical_chemistry', 'Physical Chemistry'),
+        ('organic_chemistry', 'Organic Chemistry'),
+        ('inorganic_chemistry', 'Inorganic Chemistry')
+    ]
+    
+    # Mathematics topics
+    math_topics = [
+        ('algebra', 'Algebra'),
+        ('calculus', 'Calculus'),
+        ('coordinate_geometry', 'Coordinate Geometry'),
+        ('trigonometry', 'Trigonometry'),
+        ('vectors', 'Vectors'),
+        ('probability', 'Probability')
+    ]
+    
+    all_topics = physics_topics + chemistry_topics + math_topics
+    
+    for topic_key, topic_name in all_topics:
+        score_key = f'{topic_key}_score'
+        score = knowledge_state.get(score_key, 0.5)
         
         # Determine gap severity
         if score < 0.3:
@@ -49,23 +89,24 @@ def analyze_skill_gaps(
         else:
             severity = "low"
         
-        # Only report significant gaps
+        # Only report significant gaps (score < 0.7)
         if score < 0.7:
             # Check if gap already exists
             existing_gap = db.query(SkillGap).filter(
                 SkillGap.student_id == current_student.id,
-                SkillGap.topic == topic
+                SkillGap.topic == topic_key
             ).first()
             
             if existing_gap:
                 # Update existing gap
                 existing_gap.proficiency_level = score
                 existing_gap.gap_severity = severity
+                existing_gap.priority = _calculate_priority(severity, score)
             else:
                 # Create new gap
                 gap = SkillGap(
                     student_id=current_student.id,
-                    topic=topic,
+                    topic=topic_key,
                     proficiency_level=score,
                     target_level=0.8,
                     gap_severity=severity,
@@ -76,10 +117,11 @@ def analyze_skill_gaps(
                 db.add(gap)
             
             gaps.append({
-                "topic": topic.capitalize(),
-                "current_level": score,
-                "target_level": 0.8,
-                "gap_percentage": (0.8 - score) * 100,
+                "topic": topic_name,
+                "topic_key": topic_key,
+                "current_level": round(score * 100, 1),
+                "target_level": 80.0,
+                "gap_percentage": round((0.8 - score) * 100, 1),
                 "severity": severity,
                 "estimated_hours": _estimate_time(score),
                 "priority": _calculate_priority(severity, score)
@@ -98,7 +140,7 @@ def analyze_skill_gaps(
         "total_gaps_identified": len(gaps),
         "critical_gaps": len([g for g in gaps if g["severity"] == "critical"]),
         "high_priority_gaps": len([g for g in gaps if g["severity"] == "high"]),
-        "gaps": gaps,
+        "gaps": sorted(gaps, key=lambda x: x["priority"], reverse=True),
         "recommendations": _generate_recommendations(gaps),
         "stored_gaps": [gap.to_dict() for gap in all_gaps]
     }
@@ -185,22 +227,42 @@ def get_knowledge_graph(
     """
     knowledge_state = StudentModelService.get_knowledge_state(db, current_student.id)
     
-    # Build simplified knowledge graph
+    # Build knowledge graph with JEE topics
     nodes = []
     edges = []
     
-    topics = [
-        {"id": "algebra", "name": "Algebra", "score": knowledge_state.get("algebra_score", 0.0)},
-        {"id": "calculus", "name": "Calculus", "score": knowledge_state.get("calculus_score", 0.0), "prereqs": ["algebra"]},
-        {"id": "geometry", "name": "Geometry", "score": knowledge_state.get("geometry_score", 0.0)},
-        {"id": "statistics", "name": "Statistics", "score": knowledge_state.get("statistics_score", 0.0), "prereqs": ["algebra"]},
+    # Physics topics
+    physics_topics = [
+        {"id": "mechanics", "name": "Mechanics", "score": knowledge_state.get("mechanics_score", 0.5)},
+        {"id": "electromagnetism", "name": "Electromagnetism", "score": knowledge_state.get("electromagnetism_score", 0.5)},
+        {"id": "optics", "name": "Optics", "score": knowledge_state.get("optics_score", 0.5)},
+        {"id": "modern_physics", "name": "Modern Physics", "score": knowledge_state.get("modern_physics_score", 0.5), "prereqs": ["mechanics", "electromagnetism"]},
     ]
     
-    for topic in topics:
+    # Chemistry topics
+    chemistry_topics = [
+        {"id": "physical_chemistry", "name": "Physical Chemistry", "score": knowledge_state.get("physical_chemistry_score", 0.5)},
+        {"id": "organic_chemistry", "name": "Organic Chemistry", "score": knowledge_state.get("organic_chemistry_score", 0.5)},
+        {"id": "inorganic_chemistry", "name": "Inorganic Chemistry", "score": knowledge_state.get("inorganic_chemistry_score", 0.5)},
+    ]
+    
+    # Mathematics topics
+    math_topics = [
+        {"id": "algebra", "name": "Algebra", "score": knowledge_state.get("algebra_score", 0.5)},
+        {"id": "trigonometry", "name": "Trigonometry", "score": knowledge_state.get("trigonometry_score", 0.5), "prereqs": ["algebra"]},
+        {"id": "calculus", "name": "Calculus", "score": knowledge_state.get("calculus_score", 0.5), "prereqs": ["algebra", "trigonometry"]},
+        {"id": "coordinate_geometry", "name": "Coordinate Geometry", "score": knowledge_state.get("coordinate_geometry_score", 0.5), "prereqs": ["algebra"]},
+        {"id": "vectors", "name": "Vectors", "score": knowledge_state.get("vectors_score", 0.5), "prereqs": ["algebra"]},
+        {"id": "probability", "name": "Probability", "score": knowledge_state.get("probability_score", 0.5), "prereqs": ["algebra"]},
+    ]
+    
+    all_topics = physics_topics + chemistry_topics + math_topics
+    
+    for topic in all_topics:
         nodes.append({
             "id": topic["id"],
             "name": topic["name"],
-            "proficiency": topic["score"],
+            "proficiency": round(topic["score"] * 100, 1),
             "status": _get_status(topic["score"]),
             "color": _get_color(topic["score"])
         })

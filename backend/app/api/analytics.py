@@ -151,6 +151,7 @@ def get_performance_chart(username: str, days: int = 7, db: Session = Depends(ge
                 'correct': 0,
                 'accuracy': 0.0,
                 'avg_reward': 0.0,
+                'total_reward': 0.0,
                 'total_time': 0.0
             }
         
@@ -158,11 +159,14 @@ def get_performance_chart(username: str, days: int = 7, db: Session = Depends(ge
         if session.is_correct:
             daily_data[day]['correct'] += 1
         daily_data[day]['total_time'] += session.time_spent / 60  # minutes
+        daily_data[day]['total_reward'] += session.reward if session.reward else 0
     
     # Calculate averages
     for day_data in daily_data.values():
-        day_data['accuracy'] = day_data['correct'] / day_data['attempts'] if day_data['attempts'] > 0 else 0
+        day_data['accuracy'] = (day_data['correct'] / day_data['attempts'] * 100) if day_data['attempts'] > 0 else 0
         day_data['avg_time'] = day_data['total_time'] / day_data['attempts'] if day_data['attempts'] > 0 else 0
+        day_data['avg_reward'] = day_data['total_reward'] / day_data['attempts'] if day_data['attempts'] > 0 else 0
+        del day_data['total_reward']  # Remove temporary field
     
     return list(daily_data.values())
 

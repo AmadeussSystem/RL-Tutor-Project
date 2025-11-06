@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Sidebar from '@/app/components/Sidebar';
 import { Lock, Check, Clock, TrendingUp, Target, Award } from 'lucide-react';
 
@@ -23,6 +24,7 @@ interface SkillNode extends Skill {
 }
 
 export default function SkillTreePage() {
+  const router = useRouter();
   const [skills, setSkills] = useState<Skill[]>([]);
   const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null);
   const [filter, setFilter] = useState<string>('all');
@@ -31,6 +33,10 @@ export default function SkillTreePage() {
   useEffect(() => {
     fetchSkillTree();
   }, []);
+
+  const handleStartLearning = (skill: Skill) => {
+    router.push(`/learning-path?skillId=${skill.id}&skillName=${encodeURIComponent(skill.name)}`);
+  };
 
   const fetchSkillTree = async () => {
     try {
@@ -92,48 +98,57 @@ export default function SkillTreePage() {
 
   return (
     <Sidebar>
-      <div className="min-h-screen bg-gray-50 p-6">
+      <div className="min-h-screen bg-black text-white p-6">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">🌳 Skill Tree</h1>
-            <p className="text-gray-600">Master skills to unlock new learning paths</p>
+          <div className="mb-8">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-3 bg-gradient-to-br from-purple-500 to-blue-600 rounded-xl">
+                <Target className="w-8 h-8" />
+              </div>
+              <div>
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+                  🌳 Skill Tree
+                </h1>
+                <p className="text-zinc-400 mt-1">Master skills to unlock new learning paths</p>
+              </div>
+            </div>
           </div>
 
           {/* Stats */}
           <div className="grid grid-cols-4 gap-4 mb-6">
-            <div className="bg-white p-4 rounded-lg shadow">
+            <div className="bg-gradient-to-br from-zinc-900 to-black border border-zinc-800 p-4 rounded-lg hover:border-purple-500/50 transition-colors">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Total Skills</p>
-                  <p className="text-2xl font-bold text-gray-900">{statsData.total}</p>
+                  <p className="text-sm text-zinc-400">Total Skills</p>
+                  <p className="text-2xl font-bold text-white">{statsData.total}</p>
                 </div>
-                <Target className="w-8 h-8 text-blue-500" />
+                <Target className="w-8 h-8 text-purple-500" />
               </div>
             </div>
-            <div className="bg-white p-4 rounded-lg shadow">
+            <div className="bg-gradient-to-br from-zinc-900 to-black border border-zinc-800 p-4 rounded-lg hover:border-green-500/50 transition-colors">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Unlocked</p>
-                  <p className="text-2xl font-bold text-green-600">{statsData.unlocked}</p>
+                  <p className="text-sm text-zinc-400">Unlocked</p>
+                  <p className="text-2xl font-bold text-green-400">{statsData.unlocked}</p>
                 </div>
                 <Check className="w-8 h-8 text-green-500" />
               </div>
             </div>
-            <div className="bg-white p-4 rounded-lg shadow">
+            <div className="bg-gradient-to-br from-zinc-900 to-black border border-zinc-800 p-4 rounded-lg hover:border-orange-500/50 transition-colors">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">In Progress</p>
-                  <p className="text-2xl font-bold text-orange-600">{statsData.inProgress}</p>
+                  <p className="text-sm text-zinc-400">In Progress</p>
+                  <p className="text-2xl font-bold text-orange-400">{statsData.inProgress}</p>
                 </div>
                 <TrendingUp className="w-8 h-8 text-orange-500" />
               </div>
             </div>
-            <div className="bg-white p-4 rounded-lg shadow">
+            <div className="bg-gradient-to-br from-zinc-900 to-black border border-zinc-800 p-4 rounded-lg hover:border-purple-500/50 transition-colors">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Mastered</p>
-                  <p className="text-2xl font-bold text-purple-600">{statsData.mastered}</p>
+                  <p className="text-sm text-zinc-400">Mastered</p>
+                  <p className="text-2xl font-bold text-purple-400">{statsData.mastered}</p>
                 </div>
                 <Award className="w-8 h-8 text-purple-500" />
               </div>
@@ -141,29 +156,41 @@ export default function SkillTreePage() {
           </div>
 
           {/* Filters */}
-          <div className="bg-white p-4 rounded-lg shadow mb-6">
+          <div className="bg-gradient-to-br from-zinc-900 to-black border border-zinc-800 p-4 rounded-lg mb-6">
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => setFilter('all')}
-                className={`px-4 py-2 rounded-lg ${filter === 'all' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                className={`px-4 py-2 rounded-lg transition-all ${filter === 'all'
+                  ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white border border-purple-400'
+                  : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700 border border-zinc-700'
+                  }`}
               >
                 All Skills
               </button>
               <button
                 onClick={() => setFilter('unlocked')}
-                className={`px-4 py-2 rounded-lg ${filter === 'unlocked' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                className={`px-4 py-2 rounded-lg transition-all ${filter === 'unlocked'
+                  ? 'bg-green-600/80 text-white border border-green-400'
+                  : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700 border border-zinc-700'
+                  }`}
               >
                 Unlocked
               </button>
               <button
                 onClick={() => setFilter('locked')}
-                className={`px-4 py-2 rounded-lg ${filter === 'locked' ? 'bg-gray-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                className={`px-4 py-2 rounded-lg transition-all ${filter === 'locked'
+                  ? 'bg-gray-600/80 text-white border border-gray-400'
+                  : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700 border border-zinc-700'
+                  }`}
               >
                 Locked
               </button>
               <button
                 onClick={() => setFilter('mastered')}
-                className={`px-4 py-2 rounded-lg ${filter === 'mastered' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                className={`px-4 py-2 rounded-lg transition-all ${filter === 'mastered'
+                  ? 'bg-purple-600/80 text-white border border-purple-400'
+                  : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700 border border-zinc-700'
+                  }`}
               >
                 Mastered
               </button>
@@ -171,7 +198,10 @@ export default function SkillTreePage() {
                 <button
                   key={cat}
                   onClick={() => setFilter(cat)}
-                  className={`px-4 py-2 rounded-lg ${filter === cat ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                  className={`px-4 py-2 rounded-lg transition-all ${filter === cat
+                    ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white border border-blue-400'
+                    : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700 border border-zinc-700'
+                    }`}
                 >
                   {cat}
                 </button>
@@ -185,37 +215,37 @@ export default function SkillTreePage() {
               <div
                 key={skill.id}
                 onClick={() => setSelectedSkill(skill)}
-                className={`bg-white p-4 rounded-lg shadow cursor-pointer transition-all hover:shadow-lg ${!skill.is_unlocked ? 'opacity-60' : ''
+                className={`bg-gradient-to-br from-zinc-900 to-black border border-zinc-800 p-4 rounded-lg cursor-pointer transition-all hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-500/10 ${!skill.is_unlocked ? 'opacity-60' : ''
                   }`}
                 style={{ borderLeft: `4px solid ${getMasteryColor(skill.mastery_level)}` }}
               >
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      {!skill.is_unlocked && <Lock className="w-4 h-4 text-gray-400" />}
-                      {skill.mastery_level >= 5 && <Award className="w-4 h-4 text-purple-600" />}
-                      <h3 className="font-semibold text-gray-900">{skill.name}</h3>
+                      {!skill.is_unlocked && <Lock className="w-4 h-4 text-gray-500" />}
+                      {skill.mastery_level >= 5 && <Award className="w-4 h-4 text-purple-400" />}
+                      <h3 className="font-semibold text-white">{skill.name}</h3>
                     </div>
-                    <p className="text-xs text-gray-500">{skill.category}</p>
+                    <p className="text-xs text-zinc-500">{skill.category}</p>
                   </div>
-                  <span className={`px-2 py-1 text-xs rounded ${skill.difficulty === 'beginner' ? 'bg-green-100 text-green-800' :
-                    skill.difficulty === 'intermediate' ? 'bg-blue-100 text-blue-800' :
-                      skill.difficulty === 'advanced' ? 'bg-orange-100 text-orange-800' :
-                        'bg-red-100 text-red-800'
+                  <span className={`px-2 py-1 text-xs rounded font-medium ${skill.difficulty === 'beginner' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
+                    skill.difficulty === 'intermediate' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
+                      skill.difficulty === 'advanced' ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30' :
+                        'bg-red-500/20 text-red-400 border border-red-500/30'
                     }`}>
                     {skill.difficulty}
                   </span>
                 </div>
 
-                <p className="text-sm text-gray-600 mb-3">{skill.description}</p>
+                <p className="text-sm text-zinc-400 mb-3">{skill.description}</p>
 
                 {/* Progress Bar */}
-                <div className="mb-2">
+                <div className="mb-3">
                   <div className="flex justify-between text-xs mb-1">
-                    <span className="text-gray-600">{getMasteryLabel(skill.mastery_level)}</span>
-                    <span className="text-gray-600">{Math.round(skill.progress_percentage)}%</span>
+                    <span className="text-zinc-400">{getMasteryLabel(skill.mastery_level)}</span>
+                    <span className="text-zinc-400">{Math.round(skill.progress_percentage)}%</span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="w-full bg-zinc-800 rounded-full h-2">
                     <div
                       className="h-2 rounded-full transition-all"
                       style={{
@@ -226,7 +256,7 @@ export default function SkillTreePage() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 text-xs text-gray-500">
+                <div className="flex items-center gap-2 text-xs text-zinc-500">
                   <Clock className="w-3 h-3" />
                   <span>{skill.estimated_hours}h to master</span>
                 </div>
@@ -235,32 +265,34 @@ export default function SkillTreePage() {
           </div>
 
           {filteredSkills.length === 0 && (
-            <div className="text-center py-12 bg-white rounded-lg shadow">
-              <p className="text-gray-500">No skills found matching your filter</p>
+            <div className="text-center py-12 bg-gradient-to-br from-zinc-900 to-black border border-zinc-800 rounded-lg">
+              <p className="text-zinc-400">No skills found matching your filter</p>
             </div>
           )}
 
           {/* Skill Detail Modal */}
           {selectedSkill && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onClick={() => setSelectedSkill(null)}>
-              <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-                <h2 className="text-2xl font-bold mb-4">{selectedSkill.name}</h2>
-                <div className="space-y-4">
+            <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50" onClick={() => setSelectedSkill(null)}>
+              <div className="bg-gradient-to-br from-zinc-900 to-black border border-zinc-700 rounded-lg p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl shadow-purple-500/20" onClick={e => e.stopPropagation()}>
+                <h2 className="text-3xl font-bold text-white mb-6 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+                  {selectedSkill.name}
+                </h2>
+                <div className="space-y-6">
                   <div>
-                    <p className="text-sm text-gray-600 mb-1">Category</p>
-                    <p className="font-semibold">{selectedSkill.category}</p>
+                    <p className="text-xs uppercase tracking-widest text-zinc-500 mb-2">Category</p>
+                    <p className="font-semibold text-white text-lg">{selectedSkill.category}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600 mb-1">Description</p>
-                    <p>{selectedSkill.description}</p>
+                    <p className="text-xs uppercase tracking-widest text-zinc-500 mb-2">Description</p>
+                    <p className="text-zinc-300 leading-relaxed">{selectedSkill.description}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600 mb-1">Mastery Level</p>
-                    <div className="flex items-center gap-3">
+                    <p className="text-xs uppercase tracking-widest text-zinc-500 mb-3">Mastery Level</p>
+                    <div className="flex items-center gap-4">
                       <div className="flex-1">
-                        <div className="w-full bg-gray-200 rounded-full h-3">
+                        <div className="w-full bg-zinc-800 rounded-full h-3">
                           <div
-                            className="h-3 rounded-full"
+                            className="h-3 rounded-full transition-all"
                             style={{
                               width: `${selectedSkill.progress_percentage}%`,
                               backgroundColor: getMasteryColor(selectedSkill.mastery_level)
@@ -268,35 +300,37 @@ export default function SkillTreePage() {
                           />
                         </div>
                       </div>
-                      <span className="font-semibold">{getMasteryLabel(selectedSkill.mastery_level)}</span>
+                      <span className="font-semibold text-white min-w-fit">{getMasteryLabel(selectedSkill.mastery_level)}</span>
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm text-gray-600 mb-1">Difficulty</p>
-                      <p className="font-semibold capitalize">{selectedSkill.difficulty}</p>
+                    <div className="bg-zinc-800/50 border border-zinc-700 p-4 rounded-lg">
+                      <p className="text-xs uppercase tracking-widest text-zinc-500 mb-2">Difficulty</p>
+                      <p className="font-semibold text-white capitalize">{selectedSkill.difficulty}</p>
                     </div>
-                    <div>
-                      <p className="text-sm text-gray-600 mb-1">Estimated Time</p>
-                      <p className="font-semibold">{selectedSkill.estimated_hours} hours</p>
+                    <div className="bg-zinc-800/50 border border-zinc-700 p-4 rounded-lg">
+                      <p className="text-xs uppercase tracking-widest text-zinc-500 mb-2">Estimated Time</p>
+                      <p className="font-semibold text-white">{selectedSkill.estimated_hours} hours</p>
                     </div>
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-600 mb-1">Status</p>
-                    <p className="font-semibold">
+                  <div className="bg-zinc-800/50 border border-zinc-700 p-4 rounded-lg">
+                    <p className="text-xs uppercase tracking-widest text-zinc-500 mb-2">Status</p>
+                    <p className={`font-semibold text-lg ${selectedSkill.is_unlocked ? 'text-green-400' : 'text-gray-400'}`}>
                       {selectedSkill.is_unlocked ? '🔓 Unlocked' : '🔒 Locked - Complete prerequisites first'}
                     </p>
                   </div>
                 </div>
-                <div className="mt-6 flex gap-2">
+                <div className="mt-8 flex gap-3">
                   {selectedSkill.is_unlocked && selectedSkill.mastery_level < 5 && (
-                    <button className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                    <button
+                      onClick={() => handleStartLearning(selectedSkill)}
+                      className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-all shadow-lg shadow-purple-500/20">
                       Start Learning
                     </button>
                   )}
                   <button
                     onClick={() => setSelectedSkill(null)}
-                    className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                    className="px-6 py-3 border border-zinc-600 text-zinc-300 rounded-lg hover:bg-zinc-800/50 hover:border-zinc-500 transition-all font-semibold"
                   >
                     Close
                   </button>

@@ -16,6 +16,40 @@ export default function DashboardPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [tokenExpired, setTokenExpired] = useState(false);
+    const [checkingPlacement, setCheckingPlacement] = useState(true);
+
+    useEffect(() => {
+        if (!isAuthenticated) {
+            router.push('/login');
+            return;
+        }
+
+        checkPlacementStatus();
+    }, [isAuthenticated, user]);
+
+    const checkPlacementStatus = async () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            router.push('/login');
+            return;
+        }
+
+        try {
+            const status = await api.getPlacementStatus(token);
+            if (!status.completed) {
+                // Redirect to placement test if not completed
+                router.push('/placement-test');
+                return;
+            }
+            // Placement completed, load dashboard
+            setCheckingPlacement(false);
+            loadDashboard();
+        } catch (err: any) {
+            console.error('Failed to check placement status:', err);
+            setCheckingPlacement(false);
+            loadDashboard(); // Continue to dashboard on error
+        }
+    };
 
     useEffect(() => {
         if (!isAuthenticated) {
@@ -60,11 +94,13 @@ export default function DashboardPage() {
         }
     };
 
-    if (isLoading) {
+    if (checkingPlacement || isLoading) {
         return (
             <Sidebar>
                 <div className="min-h-screen bg-black flex items-center justify-center">
-                    <div className="text-white text-xl">Loading dashboard...</div>
+                    <div className="text-white text-xl">
+                        {checkingPlacement ? 'Checking placement status...' : 'Loading dashboard...'}
+                    </div>
                 </div>
             </Sidebar>
         );

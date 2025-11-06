@@ -17,13 +17,26 @@ from app.api.auth import get_current_student
 router = APIRouter(prefix="/learning-pace", tags=["learning-pace"])
 
 
-# Baseline concept completion times (in seconds)
+# Baseline concept completion times (in seconds) - JEE Topics
 BASELINE_TIMES = {
+    # Physics
+    "mechanics": 240,  # 4 minutes
+    "electromagnetism": 260,  # 4.3 minutes
+    "optics": 220,  # 3.7 minutes
+    "modern_physics": 280,  # 4.7 minutes
+    # Chemistry
+    "physical_chemistry": 240,  # 4 minutes
+    "organic_chemistry": 260,  # 4.3 minutes
+    "inorganic_chemistry": 240,  # 4 minutes
+    # Mathematics
     "algebra": 180,  # 3 minutes
     "calculus": 240,  # 4 minutes
-    "geometry": 200,  # 3.3 minutes
-    "statistics": 220,  # 3.7 minutes
-    "default": 200
+    "coordinate_geometry": 220,  # 3.7 minutes
+    "trigonometry": 200,  # 3.3 minutes
+    "vectors": 200,  # 3.3 minutes
+    "probability": 220,  # 3.7 minutes
+    # Default
+    "default": 240
 }
 
 
@@ -36,9 +49,7 @@ def calculate_pace_metrics(student_id: int, db: Session) -> Dict[str, Any]:
     """
     # Get all sessions for student
     sessions = db.query(LearningSession).filter(
-        LearningSession.student_id == student_id,
-        LearningSession.time_spent_seconds.isnot(None),
-        LearningSession.time_spent_seconds > 0
+        LearningSession.student_id == student_id
     ).all()
     
     if not sessions:
@@ -52,11 +63,29 @@ def calculate_pace_metrics(student_id: int, db: Session) -> Dict[str, Any]:
     
     # Calculate time by concept
     time_by_concept = {}
+    valid_sessions = []
+    
     for session in sessions:
+        # Get time spent (support both fields)
+        time_spent = session.time_spent_seconds or session.time_spent or 0
+        if time_spent <= 0:
+            continue
+            
+        valid_sessions.append(session)
         concept = session.concept_name or "general"
+        
         if concept not in time_by_concept:
             time_by_concept[concept] = []
-        time_by_concept[concept].append(session.time_spent_seconds)
+        time_by_concept[concept].append(time_spent)
+    
+    if not valid_sessions:
+        return {
+            "avg_speed": 1.0,
+            "avg_time_per_concept": 0,
+            "completion_rate": 0,
+            "total_concepts": 0,
+            "time_by_concept": {}
+        }
     
     # Calculate average time per concept
     avg_times = {}
@@ -73,13 +102,15 @@ def calculate_pace_metrics(student_id: int, db: Session) -> Dict[str, Any]:
     
     avg_speed = statistics.mean(speed_ratios) if speed_ratios else 1.0
     
-    # Calculate completion rate
-    total_sessions = len(sessions)
-    correct_sessions = sum(1 for s in sessions if s.is_correct)
+    # Calculate completion rate (accuracy)
+    total_sessions = len(valid_sessions)
+    correct_sessions = sum(1 for s in valid_sessions if s.is_correct)
     completion_rate = (correct_sessions / total_sessions * 100) if total_sessions > 0 else 0
     
     # Calculate overall average time
-    all_times = [s.time_spent_seconds for s in sessions if s.time_spent_seconds]
+    all_times = [session.time_spent_seconds or session.time_spent or 0 
+                 for session in valid_sessions]
+    all_times = [t for t in all_times if t > 0]
     avg_time = statistics.mean(all_times) if all_times else 0
     
     return {
@@ -433,8 +464,7 @@ async def get_time_analytics(
     cutoff_date = datetime.utcnow() - timedelta(days=days)
     sessions = db.query(LearningSession).filter(
         LearningSession.student_id == current_student.id,
-        LearningSession.timestamp >= cutoff_date,
-        LearningSession.time_spent_seconds.isnot(None)
+        LearningSession.timestamp >= cutoff_date
     ).all()
     
     if not sessions:
@@ -449,27 +479,30 @@ async def get_time_analytics(
     # Calculate daily time spent
     daily_time = {}
     for session in sessions:
+        time_spent = session.time_spent_seconds or session.time_spent or 0
         date_key = session.timestamp.date().isoformat()
         if date_key not in daily_time:
             daily_time[date_key] = 0
-        daily_time[date_key] += session.time_spent_seconds or 0
+        daily_time[date_key] += time_spent
     
-    # Calculate time by concept
+    # Calculate time by concept (JEE topics)
     time_by_concept = {}
     for session in sessions:
+        time_spent = session.time_spent_seconds or session.time_spent or 0
         concept = session.concept_name or "general"
         if concept not in time_by_concept:
             time_by_concept[concept] = 0
-        time_by_concept[concept] += session.time_spent_seconds or 0
+        time_by_concept[concept] += time_spent
     
     # Calculate time by difficulty
     time_by_difficulty = {}
     for session in sessions:
+        time_spent = session.time_spent_seconds or session.time_spent or 0
         if session.content:
             diff = session.content.difficulty or 3
             if diff not in time_by_difficulty:
                 time_by_difficulty[diff] = 0
-            time_by_difficulty[diff] += session.time_spent_seconds or 0
+            time_by_difficulty[diff] += time_spent
     
     # Find peak learning hours
     hour_counts = {}
@@ -482,7 +515,7 @@ async def get_time_analytics(
     peak_hours = sorted(hour_counts.items(), key=lambda x: x[1], reverse=True)[:3]
     peak_hours_list = [f"{hour:02d}:00" for hour, _ in peak_hours]
     
-    total_time = sum(s.time_spent_seconds or 0 for s in sessions)
+    total_time = sum(s.time_spent_seconds or s.time_spent or 0 for s in sessions)
     
     return {
         "daily_time_spent": [
