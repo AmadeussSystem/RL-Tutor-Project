@@ -35,17 +35,27 @@
 ## 📋 Steps to Deploy to Production
 
 ### Backend on Render (Already Done ✅)
-Your backend is already deployed! Just need to verify:
+Your backend is already deployed! But you need to switch to PostgreSQL:
 
-1. **Check Environment Variables on Render:**
+⚠️ **CRITICAL: SQLite databases are wiped on Render's free tier!**
+User accounts will disappear when the service restarts.
+
+**Solution: Switch to PostgreSQL (See POSTGRESQL_MIGRATION.md)**
+
+1. **Create PostgreSQL Database on Render:**
+   - Free tier available
+   - Data persists forever
+   - Automatic backups
+
+2. **Update Environment Variables on Render:**
    ```
-   DATABASE_URL=sqlite:///./rl_tutor.db
+   DATABASE_URL=postgresql://user:pass@host/dbname  (from Render PostgreSQL)
    SECRET_KEY=[your-secret-key]
    ACCESS_TOKEN_EXPIRE_MINUTES=1440
    FRONTEND_URL=[will add after Vercel deploy]
    ```
 
-2. **Backend URL:** https://rl-tutor-project.onrender.com
+3. **Backend URL:** https://rl-tutor-project.onrender.com
 
 ### Frontend on Vercel (To Do)
 
@@ -101,8 +111,10 @@ Your backend is already deployed! Just need to verify:
    ```
 
 2. **Use PostgreSQL** instead of SQLite (Render offers free PostgreSQL):
-   - Create PostgreSQL database on Render
+   - ⚠️ **REQUIRED for production - SQLite data is wiped on restart!**
+   - Create PostgreSQL database on Render (Free tier)
    - Update DATABASE_URL environment variable
+   - See **POSTGRESQL_MIGRATION.md** for step-by-step guide
    - Render will handle migrations automatically
 
 3. **Enable HTTPS only** (Vercel and Render do this by default ✅)

@@ -9,6 +9,7 @@ pydantic-settings
 
 # Database
 sqlalchemy
+psycopg2-binary  # PostgreSQL driver for production
 
 # Authentication & Security
 python-jose[cryptography]
