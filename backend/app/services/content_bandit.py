@@ -93,6 +93,24 @@ class ContentBandit:
         best_type = max(self.arm_values, key=self.arm_values.get)
         return best_type, self.arm_values[best_type]
     
+    def get_arm_values(self) -> Dict[str, float]:
+        """
+        Get current arm values (expected rewards for each content type)
+        
+        Returns:
+            Dictionary mapping content type to expected reward
+        """
+        return self.arm_values.copy()
+    
+    def get_pull_counts(self) -> Dict[str, int]:
+        """
+        Get number of times each arm has been pulled
+        
+        Returns:
+            Dictionary mapping content type to pull count
+        """
+        return self.arm_pulls.copy()
+    
     def get_statistics(self) -> Dict:
         """Get bandit statistics"""
         return {

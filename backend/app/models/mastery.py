@@ -135,6 +135,18 @@ class StudentMastery(Base):
         Update mastery level based on performance.
         Uses accuracy and practice time to calculate mastery.
         """
+        # Initialize defaults if None (for newly created records)
+        if self.total_attempts is None:
+            self.total_attempts = 0
+        if self.correct_attempts is None:
+            self.correct_attempts = 0
+        if self.total_practice_time is None:
+            self.total_practice_time = 0
+        if self.mastery_level is None:
+            self.mastery_level = 0
+        if self.accuracy is None:
+            self.accuracy = 0.0
+        
         # Update attempts
         self.total_attempts += 1
         if correct:

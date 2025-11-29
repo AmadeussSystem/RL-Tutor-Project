@@ -128,12 +128,18 @@ class MasteryService:
         if not mastery:
             mastery = StudentMastery(
                 student_id=student_id,
-                skill_id=skill_id
+                skill_id=skill_id,
+                mastery_level=0,
+                total_attempts=0,
+                correct_attempts=0,
+                total_practice_time=0,
+                accuracy=0.0,
+                progress_percentage=0.0
             )
             self.db.add(mastery)
         
         # Update mastery
-        old_level = mastery.mastery_level
+        old_level = mastery.mastery_level or 0
         mastery.update_mastery(correct, time_spent)
         
         self.db.commit()
@@ -155,7 +161,7 @@ class MasteryService:
         
         return {
             "mastery": mastery.to_dict(),
-            "level_up": mastery.mastery_level > old_level,
+            "level_up": (mastery.mastery_level or 0) > old_level,
             "old_level": old_level,
             "new_level": mastery.mastery_level,
             "newly_unlocked_skills": newly_unlocked
@@ -442,8 +448,15 @@ class StudyPlanService:
         # Calculate total required hours
         total_hours = sum(skill.estimated_hours for skill in skills)
         
-        # Calculate available study days
-        days_available = (target_date - datetime.now()).days
+        # Calculate available study days - handle timezone-aware dates
+        now = datetime.now()
+        if target_date.tzinfo is not None:
+            # Convert target_date to naive by removing timezone
+            target_date_naive = target_date.replace(tzinfo=None)
+        else:
+            target_date_naive = target_date
+        
+        days_available = (target_date_naive - now).days
         if days_available <= 0:
             raise ValueError("Target date must be in the future")
         
