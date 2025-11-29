@@ -308,17 +308,17 @@ export default function StudyPlanPage() {
             </h2>
 
             <div className="grid grid-cols-3 gap-4 mb-6">
-              <div className="bg-white bg-opacity-20 rounded-lg p-4">
+              <div className="bg-white/30 backdrop-blur-sm border border-white/20 rounded-lg p-4 shadow-lg">
                 <CheckCircle className="w-8 h-8 mb-2" />
                 <p className="text-3xl font-bold">{completedCount}/{todayTasks.length}</p>
                 <p className="text-sm opacity-90">Tasks Completed</p>
               </div>
-              <div className="bg-white bg-opacity-20 rounded-lg p-4">
+              <div className="bg-white/30 backdrop-blur-sm border border-white/20 rounded-lg p-4 shadow-lg">
                 <Clock className="w-8 h-8 mb-2" />
                 <p className="text-3xl font-bold">{completedMinutes}/{totalMinutes}</p>
                 <p className="text-sm opacity-90">Minutes (min)</p>
               </div>
-              <div className="bg-white bg-opacity-20 rounded-lg p-4">
+              <div className="bg-white/30 backdrop-blur-sm border border-white/20 rounded-lg p-4 shadow-lg">
                 <Target className="w-8 h-8 mb-2" />
                 <p className="text-3xl font-bold">{Math.round((completedCount / Math.max(todayTasks.length, 1)) * 100)}%</p>
                 <p className="text-sm opacity-90">Progress</p>
@@ -326,11 +326,11 @@ export default function StudyPlanPage() {
             </div>
 
             {/* Task List */}
-            <div className="space-y-2">
+            <div className="space-y-3">
               {todayTasks.length === 0 ? (
-                <div className="text-center py-8 bg-white bg-opacity-10 rounded-lg">
-                  <p className="text-lg">No tasks scheduled for today 🎉</p>
-                  <p className="text-sm opacity-75 mt-1">Enjoy your day or create a new study plan!</p>
+                <div className="text-center py-8 bg-white/20 backdrop-blur-sm border border-white/20 rounded-lg">
+                  <p className="text-lg font-semibold">No tasks scheduled for today 🎉</p>
+                  <p className="text-sm opacity-90 mt-1">Enjoy your day or create a new study plan!</p>
                 </div>
               ) : (
                 todayTasks.map((task, idx) => {
@@ -341,7 +341,9 @@ export default function StudyPlanPage() {
                     <div
                       key={taskKey}
                       onClick={() => toggleTask(taskKey)}
-                      className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all ${isCompleted ? 'bg-white bg-opacity-30' : 'bg-white bg-opacity-20 hover:bg-opacity-25'
+                      className={`flex items-center gap-3 p-4 rounded-lg cursor-pointer transition-all border shadow-md ${isCompleted
+                          ? 'bg-white/40 backdrop-blur-sm border-white/30 opacity-75'
+                          : 'bg-white/30 backdrop-blur-sm border-white/20 hover:bg-white/40 hover:border-white/30'
                         }`}
                     >
                       {isCompleted ? (
