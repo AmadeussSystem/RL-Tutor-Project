@@ -4,8 +4,9 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "../contexts/AuthContext"
 import Sidebar from "../components/Sidebar"
-import { 
-    Brain, CheckCircle, XCircle, Loader, Clock, 
+import { API_BASE } from '@/app/config/api';
+import {
+    Brain, CheckCircle, XCircle, Loader, Clock,
     ChevronRight, ChevronLeft, SkipForward, Target,
     Award, BookOpen, Sparkles, Trophy, ArrowRight,
     Zap, TrendingUp, Star
@@ -57,9 +58,9 @@ const difficultyLabels: Record<number, { label: string; color: string }> = {
 
 // Get category color or default
 const getCategoryStyle = (category: string) => {
-    return categoryColors[category] || { 
-        bg: "bg-zinc-500/10", 
-        border: "border-zinc-500/30", 
+    return categoryColors[category] || {
+        bg: "bg-zinc-500/10",
+        border: "border-zinc-500/30",
         text: "text-zinc-400",
         gradient: "from-zinc-600 to-gray-600"
     }
@@ -68,7 +69,7 @@ const getCategoryStyle = (category: string) => {
 export default function PlacementTest() {
     const router = useRouter()
     const { user, token } = useAuth()
-    
+
     // Test state
     const [loading, setLoading] = useState(true)
     const [submitting, setSubmitting] = useState(false)
@@ -77,19 +78,19 @@ export default function PlacementTest() {
     const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null)
     const [answers, setAnswers] = useState<Answer[]>([])
     const [skippedQuestions, setSkippedQuestions] = useState<number[]>([])
-    
+
     // Timer state
     const [questionStartTime, setQuestionStartTime] = useState<number>(Date.now())
     const [totalTimeSpent, setTotalTimeSpent] = useState(0)
     const [currentQuestionTime, setCurrentQuestionTime] = useState(0)
-    
+
     // UI state
     const [showIntro, setShowIntro] = useState(true)
     const [testComplete, setTestComplete] = useState(false)
     const [unlockedSkills, setUnlockedSkills] = useState<UnlockedSkill[]>([])
     const [error, setError] = useState<string | null>(null)
     const [animateIn, setAnimateIn] = useState(false)
-    
+
     // Timer effect
     useEffect(() => {
         const timer = setInterval(() => {
@@ -114,7 +115,7 @@ export default function PlacementTest() {
 
     const fetchPlacementQuestions = async () => {
         try {
-            const response = await fetch("http://localhost:8002/api/v1/placement/test/questions", {
+            const response = await fetch(`${API_BASE}/placement/test/questions`, {
                 headers: {
                     "Authorization": `Bearer ${token}`,
                 },
@@ -163,7 +164,7 @@ export default function PlacementTest() {
             }, 150)
         } else {
             // Collect all answers including the current one
-            const finalAnswers = selectedAnswer 
+            const finalAnswers = selectedAnswer
                 ? [...answers, {
                     skill_name: questions[currentQuestionIndex].skill_name,
                     question_id: questions[currentQuestionIndex].question.id,
@@ -211,7 +212,7 @@ export default function PlacementTest() {
         setSubmitting(true)
         setError(null)
         try {
-            const response = await fetch("http://localhost:8002/api/v1/placement/test/submit", {
+            const response = await fetch(`${API_BASE}/placement/test/submit`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -271,7 +272,7 @@ export default function PlacementTest() {
     // Intro screen
     if (showIntro && !testComplete) {
         const categoryCount = new Set(questions.map(q => q.category)).size
-        
+
         return (
             <Sidebar>
                 <div className="min-h-screen bg-black">
@@ -285,7 +286,7 @@ export default function PlacementTest() {
                                 Welcome to Your Placement Test
                             </h1>
                             <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-                                This quick assessment helps us understand your current knowledge level 
+                                This quick assessment helps us understand your current knowledge level
                                 and personalize your learning journey.
                             </p>
                         </div>
@@ -386,7 +387,7 @@ export default function PlacementTest() {
         const answeredCount = answers.length
         const skippedCount = skippedQuestions.length
         const score = unlockedSkills.length
-        
+
         return (
             <Sidebar>
                 <div className="min-h-screen bg-black">
@@ -568,7 +569,7 @@ export default function PlacementTest() {
                                 </div>
                             </div>
                         </div>
-                        
+
                         {/* Progress Bar */}
                         <div className="w-full bg-zinc-800 rounded-full h-2 overflow-hidden">
                             <div
@@ -595,7 +596,7 @@ export default function PlacementTest() {
                     )}
 
                     {/* Question Card */}
-                    <div 
+                    <div
                         className={`bg-zinc-900/80 border ${categoryStyle.border} rounded-2xl p-8 backdrop-blur-sm transform transition-all duration-300 ${animateIn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
                     >
                         {/* Question Header */}
@@ -625,23 +626,21 @@ export default function PlacementTest() {
                             {currentQuestion.question.options.map((option, index) => {
                                 const optionLetter = String.fromCharCode(65 + index)
                                 const isSelected = selectedAnswer === option
-                                
+
                                 return (
                                     <button
                                         key={index}
                                         onClick={() => handleAnswerSelect(option)}
-                                        className={`w-full text-left p-4 rounded-xl border-2 transition-all duration-200 group ${
-                                            isSelected
-                                                ? `border-purple-500 bg-purple-500/10`
-                                                : 'border-zinc-700 hover:border-zinc-500 bg-zinc-800/50 hover:bg-zinc-800'
-                                        }`}
+                                        className={`w-full text-left p-4 rounded-xl border-2 transition-all duration-200 group ${isSelected
+                                            ? `border-purple-500 bg-purple-500/10`
+                                            : 'border-zinc-700 hover:border-zinc-500 bg-zinc-800/50 hover:bg-zinc-800'
+                                            }`}
                                     >
                                         <div className="flex items-center gap-4">
-                                            <span className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold transition-colors ${
-                                                isSelected 
-                                                    ? 'bg-purple-500 text-white' 
-                                                    : 'bg-zinc-700 text-gray-300 group-hover:bg-zinc-600'
-                                            }`}>
+                                            <span className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold transition-colors ${isSelected
+                                                ? 'bg-purple-500 text-white'
+                                                : 'bg-zinc-700 text-gray-300 group-hover:bg-zinc-600'
+                                                }`}>
                                                 {optionLetter}
                                             </span>
                                             <span className="text-white flex-1">{option}</span>
@@ -706,7 +705,7 @@ export default function PlacementTest() {
                             const isAnswered = answers.some(a => questions.findIndex(q => q.question.id === a.question_id) === index)
                             const isSkipped = skippedQuestions.includes(index)
                             const isCurrent = index === currentQuestionIndex
-                            
+
                             return (
                                 <button
                                     key={index}
@@ -716,15 +715,14 @@ export default function PlacementTest() {
                                         setQuestionStartTime(Date.now())
                                         setCurrentQuestionTime(0)
                                     }}
-                                    className={`w-8 h-8 rounded-lg text-xs font-medium transition-all ${
-                                        isCurrent
-                                            ? 'bg-purple-500 text-white ring-2 ring-purple-400 ring-offset-2 ring-offset-black'
-                                            : isAnswered
-                                                ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-                                                : isSkipped
-                                                    ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
-                                                    : 'bg-zinc-800 text-gray-400 hover:bg-zinc-700'
-                                    }`}
+                                    className={`w-8 h-8 rounded-lg text-xs font-medium transition-all ${isCurrent
+                                        ? 'bg-purple-500 text-white ring-2 ring-purple-400 ring-offset-2 ring-offset-black'
+                                        : isAnswered
+                                            ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+                                            : isSkipped
+                                                ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
+                                                : 'bg-zinc-800 text-gray-400 hover:bg-zinc-700'
+                                        }`}
                                 >
                                     {index + 1}
                                 </button>

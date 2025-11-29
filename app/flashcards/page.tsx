@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Brain, CheckCircle, XCircle, Calendar, TrendingUp, Clock, Plus, Trash2 } from "lucide-react";
 import Sidebar from "@/app/components/Sidebar";
+import { API_BASE } from '@/app/config/api';
 
 interface FlashCard {
   id: number;
@@ -66,11 +67,9 @@ export default function FlashcardsPage() {
     }
 
     try {
-      const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8002";
-
       // Load due cards
       const dueResponse = await fetch(
-        `${API_BASE}/api/v1/smart-recommendations/flashcards/due`,
+        `${API_BASE}/smart-recommendations/flashcards/due`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -113,11 +112,10 @@ export default function FlashcardsPage() {
 
     setIsReviewing(true);
     const token = localStorage.getItem("token");
-    const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8002";
 
     try {
       const response = await fetch(
-        `${API_BASE}/api/v1/smart-recommendations/flashcards/${currentCard.id}/review`,
+        `${API_BASE}/smart-recommendations/flashcards/${currentCard.id}/review`,
         {
           method: "POST",
           headers: {
@@ -158,11 +156,10 @@ export default function FlashcardsPage() {
     }
 
     const token = localStorage.getItem("token");
-    const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8002";
 
     try {
       const response = await fetch(
-        `${API_BASE}/api/v1/smart-recommendations/flashcards/create`,
+        `${API_BASE}/smart-recommendations/flashcards/create`,
         {
           method: "POST",
           headers: {

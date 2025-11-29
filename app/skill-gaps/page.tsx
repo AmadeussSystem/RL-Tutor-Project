@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/contexts/AuthContext';
 import Sidebar from '@/app/components/Sidebar';
+import { API_BASE } from '@/app/config/api';
 import { Target, TrendingUp, Clock, AlertTriangle, CheckCircle, RefreshCw } from 'lucide-react';
 
 interface SkillGap {
@@ -43,8 +44,7 @@ export default function SkillGapsPage() {
                 throw new Error('Please log in to view skill gaps');
             }
 
-            const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8002';
-            const response = await fetch(`${API_BASE}/api/v1/skill-gaps/list`, {
+            const response = await fetch(`${API_BASE}/skill-gaps/list`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },
@@ -71,8 +71,7 @@ export default function SkillGapsPage() {
                 throw new Error('Please log in to analyze gaps');
             }
 
-            const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8002';
-            const response = await fetch(`${API_BASE}/api/v1/skill-gaps/analyze`, {
+            const response = await fetch(`${API_BASE}/skill-gaps/analyze`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },

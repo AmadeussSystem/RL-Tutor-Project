@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Sidebar from '@/app/components/Sidebar';
 import { Calendar, Clock, Target, TrendingUp, CheckCircle, Circle, X, BookOpen, Zap, ArrowRight, Loader, AlertCircle, Trash2, Eye } from 'lucide-react';
+import { API_BASE } from '@/app/config/api';
 
 interface StudyPlan {
   id: number;
@@ -70,7 +71,7 @@ export default function StudyPlanPage() {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showPlanDetails, setShowPlanDetails] = useState<StudyPlan | null>(null);
   const [loading, setLoading] = useState(true);
-  
+
   // Form state
   const [availableSkills, setAvailableSkills] = useState<Skill[]>([]);
   const [selectedSkills, setSelectedSkills] = useState<number[]>([]);
@@ -94,8 +95,7 @@ export default function StudyPlanPage() {
   const fetchAvailableSkills = async () => {
     try {
       const token = localStorage.getItem('token');
-      const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8002';
-      const response = await fetch(`${API_BASE}/api/v1/mastery/skills/tree`, {
+      const response = await fetch(`${API_BASE}/mastery/skills/tree`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -111,8 +111,7 @@ export default function StudyPlanPage() {
   const fetchStudyPlans = async () => {
     try {
       const token = localStorage.getItem('token');
-      const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8002';
-      const response = await fetch(`${API_BASE}/api/v1/mastery/study-plans?active_only=false`, {
+      const response = await fetch(`${API_BASE}/mastery/study-plans?active_only=false`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -130,8 +129,7 @@ export default function StudyPlanPage() {
   const fetchTodayTasks = async () => {
     try {
       const token = localStorage.getItem('token');
-      const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8002';
-      const response = await fetch(`${API_BASE}/api/v1/mastery/study-plans/today/tasks`, {
+      const response = await fetch(`${API_BASE}/mastery/study-plans/today/tasks`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -159,8 +157,7 @@ export default function StudyPlanPage() {
 
     try {
       const token = localStorage.getItem('token');
-      const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8002';
-      const response = await fetch(`${API_BASE}/api/v1/mastery/study-plans/generate`, {
+      const response = await fetch(`${API_BASE}/mastery/study-plans/generate`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -195,8 +192,7 @@ export default function StudyPlanPage() {
   const deletePlan = async (planId: number) => {
     try {
       const token = localStorage.getItem('token');
-      const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8002';
-      const response = await fetch(`${API_BASE}/api/v1/mastery/study-plans/${planId}`, {
+      const response = await fetch(`${API_BASE}/mastery/study-plans/${planId}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -221,7 +217,7 @@ export default function StudyPlanPage() {
   };
 
   const toggleSkillSelection = (skillId: number) => {
-    setSelectedSkills(prev => 
+    setSelectedSkills(prev =>
       prev.includes(skillId)
         ? prev.filter(id => id !== skillId)
         : [...prev, skillId]
@@ -443,7 +439,7 @@ export default function StudyPlanPage() {
 
                   {/* Actions */}
                   <div className="flex gap-2">
-                    <button 
+                    <button
                       onClick={() => setShowPlanDetails(plan)}
                       className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors flex items-center gap-2"
                     >
@@ -451,7 +447,7 @@ export default function StudyPlanPage() {
                       View Details
                     </button>
                     {plan.is_active && (
-                      <button 
+                      <button
                         onClick={() => deletePlan(plan.id)}
                         className="px-4 py-2 border border-red-500/30 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors flex items-center gap-2"
                       >
@@ -503,11 +499,10 @@ export default function StudyPlanPage() {
                         <button
                           key={goal.value}
                           onClick={() => setGoalType(goal.value)}
-                          className={`p-4 rounded-xl border-2 transition-all text-left ${
-                            goalType === goal.value
-                              ? 'border-purple-500 bg-purple-500/10'
-                              : 'border-zinc-700 hover:border-zinc-600 bg-zinc-800/50'
-                          }`}
+                          className={`p-4 rounded-xl border-2 transition-all text-left ${goalType === goal.value
+                            ? 'border-purple-500 bg-purple-500/10'
+                            : 'border-zinc-700 hover:border-zinc-600 bg-zinc-800/50'
+                            }`}
                         >
                           <span className="text-2xl mb-2 block">{goal.icon}</span>
                           <p className="font-semibold text-white text-sm">{goal.label}</p>
@@ -556,7 +551,7 @@ export default function StudyPlanPage() {
                         {selectedSkills.length} selected • ~{calculateEstimatedHours().toFixed(1)} hours total
                       </span>
                     </div>
-                    
+
                     {availableSkills.length === 0 ? (
                       <div className="text-center py-8 bg-zinc-800/50 rounded-lg">
                         <Loader className="w-8 h-8 text-purple-400 animate-spin mx-auto mb-3" />
@@ -567,16 +562,15 @@ export default function StudyPlanPage() {
                         {availableSkills.map(skill => {
                           const isSelected = selectedSkills.includes(skill.id);
                           const categoryColor = categoryColors[skill.category] || 'bg-zinc-500/20 border-zinc-500/30 text-zinc-400';
-                          
+
                           return (
                             <button
                               key={skill.id}
                               onClick={() => toggleSkillSelection(skill.id)}
-                              className={`p-3 rounded-lg border-2 transition-all text-left ${
-                                isSelected
-                                  ? 'border-purple-500 bg-purple-500/10'
-                                  : 'border-zinc-700 hover:border-zinc-600 bg-zinc-800/50'
-                              }`}
+                              className={`p-3 rounded-lg border-2 transition-all text-left ${isSelected
+                                ? 'border-purple-500 bg-purple-500/10'
+                                : 'border-zinc-700 hover:border-zinc-600 bg-zinc-800/50'
+                                }`}
                             >
                               <div className="flex items-start justify-between gap-2">
                                 <div className="flex-1 min-w-0">

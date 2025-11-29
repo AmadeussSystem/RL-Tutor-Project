@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Sidebar from '@/app/components/Sidebar';
+import { API_BASE } from '@/app/config/api';
 import { Award, Lock, Trophy, Star, TrendingUp } from 'lucide-react';
 
 interface Badge {
@@ -37,10 +38,9 @@ export default function AchievementsPage() {
   const fetchBadges = async () => {
     try {
       const token = localStorage.getItem('token');
-      const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8002';
 
       // Fetch earned badges
-      const earnedResponse = await fetch(`${API_BASE}/api/v1/mastery/students/badges`, {
+      const earnedResponse = await fetch(`${API_BASE}/mastery/students/badges`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 

@@ -3,7 +3,7 @@
  * Base URL configured via environment variables
  */
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8002/api/v1';
+import { API_BASE } from '@/app/config/api';
 
 // ==================== TYPES ====================
 export interface RegisterData {

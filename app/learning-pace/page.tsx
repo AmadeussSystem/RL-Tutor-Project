@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Sidebar from "@/app/components/Sidebar";
+import { API_BASE } from '@/app/config/api';
 import { Timer, Zap, Target, TrendingUp, Clock, BarChart3, Settings, AlertCircle } from "lucide-react";
 
 interface PaceProfile {
@@ -66,7 +67,6 @@ export default function LearningPacePage() {
     setTokenExpired(false);
 
     const token = localStorage.getItem("token");
-    const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8002";
 
     if (!token) {
       setError("Please log in to view your learning pace");
@@ -77,7 +77,7 @@ export default function LearningPacePage() {
     try {
       // Load pace profile
       const paceResponse = await fetch(
-        `${API_BASE}/api/v1/learning-pace/profile`,
+        `${API_BASE}/learning-pace/profile`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -155,11 +155,10 @@ export default function LearningPacePage() {
     setError(null);
 
     const token = localStorage.getItem("token");
-    const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8002";
 
     try {
       const response = await fetch(
-        `${API_BASE}/api/v1/learning-pace/analyze`,
+        `${API_BASE}/learning-pace/analyze`,
         {
           method: "POST",
           headers: {
@@ -188,7 +187,6 @@ export default function LearningPacePage() {
     difficulty?: number
   ) => {
     const token = localStorage.getItem("token");
-    const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8002";
 
     if (!token) return;
 

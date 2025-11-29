@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/app/components/Sidebar';
+import { API_BASE } from '@/app/config/api';
 import { Lock, Check, Clock, TrendingUp, Target, Award } from 'lucide-react';
 
 interface Skill {
@@ -41,8 +42,7 @@ export default function SkillTreePage() {
   const fetchSkillTree = async () => {
     try {
       const token = localStorage.getItem('token');
-      const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8002';
-      const response = await fetch(`${API_BASE}/api/v1/mastery/skills/tree`, {
+      const response = await fetch(`${API_BASE}/mastery/skills/tree`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
